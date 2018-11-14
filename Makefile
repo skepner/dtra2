@@ -38,7 +38,7 @@ XLNT_INCLUDE = xlnt-$(XLNT_RELEASE)/include
 xlnt: $(XLNT_LIB)
 
 $(XLNT_LIB): | xlnt-$(XLNT_RELEASE) cmake-installed
-	cd xlnt-$(XLNT_RELEASE) && cmake CMAKE_BUILD_TYPE=Release . && $(MAKE)
+	cd xlnt-$(XLNT_RELEASE) && mkdir build && ( cd build && cmake CMAKE_BUILD_TYPE=Release .. && cmake --build . CMAKE_BUILD_TYPE=Release )
 
 xlnt-$(XLNT_RELEASE):
 	curl -OsL https://github.com/tfussell/xlnt/archive/v$(XLNT_RELEASE).tar.gz
@@ -71,3 +71,8 @@ $(OUT_DIR):
 
 $(DIST_DIR):
 	mkdir -p $(DIST_DIR)
+
+# ======================================================================
+### Local Variables:
+### eval: (if (fboundp 'eu-rename-buffer) (eu-rename-buffer))
+### End:
