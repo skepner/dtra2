@@ -124,17 +124,16 @@ DtraData read_sheet(const char* filename)
         }
     }
 
-    DtraData data;
-    for (xlnt::row_t row = 3; row <= ws.highest_row(); ++row) {
-        // std::cerr << "row " << row << '\n';
-        auto& record = data.emplace_back();
-        for (xlnt::column_t col = 1; col <= ws.highest_column(); ++col) {
-            if (const xlnt::cell_reference cell_ref(col, row); ws.has_cell(cell_ref)) {
-                // std::cerr << "col " << col.column_string() << ' ' << ws.cell(cell_ref).to_string() << '\n';
-                std::invoke(importers[col], record, ws.cell(cell_ref));
-            }
+    DtraData data(ws.highest_row() - 2);
+    for (const auto row : ws.rows()) {
+        auto& record = data[row.front().reference().row() - 2];
+        for (const auto cell : row) {
+            std::invoke(importers[cell.reference().column()], record, cell);
         }
+        // if ((row.front().reference().row() % 100) == 0)
+        //     std::cerr << '.';
     }
+    std::cerr << "\nDEBUG: data " << data.size() << '\n';
     return data;
 
 } // read_sheet
