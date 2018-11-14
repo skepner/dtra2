@@ -1,6 +1,7 @@
 # -*- Makefile -*-
 
 TARGETS = \
+    $(DIST_DIR)/dtra2 \
     $(DIST_DIR)/test-xlnt
 
 COMMON_SOURCES =
@@ -15,6 +16,7 @@ CXX_NAME = "clang++-7.0.0   "
 FS_LIB = -L$(CXX_ROOT)/lib -lc++fs
 CXX_LIB = -L$(CXX_ROOT)/lib -lc++ -lomp $(FS_LIB)
 WARNINGS = -Wno-weak-vtables -Weverything -Wno-c++98-compat -Wno-c++98-compat-pedantic -Wno-padded
+OPTIMIZATION = -O3 -mavx -mtune=intel
 
 OUT_DIR = out
 DIST_DIR = dist
