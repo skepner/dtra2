@@ -15,6 +15,18 @@ namespace dtra
 {
     inline namespace v2
     {
+        class TextField : public std::string
+        {
+         public:
+            using std::string::string;
+            TextField& operator=(const std::string& source) { std::string::operator=(source); return *this; }
+            TextField& operator=(std::string&& source) { std::string::operator=(std::move(source)); return *this; }
+
+            std::vector<std::string> validate() const { return {}; }
+        };
+
+          // --------------------------------------------------
+
         class Record
         {
           public:
@@ -73,49 +85,49 @@ namespace dtra
             void set_record_id(const xlnt::cell& cell);
 
           private:
-            std::string sample_id_;
-            Date        collection_date_;
-            std::string species_;
-            std::string age_;
-            std::string sex_;
-            std::string ring_number_;
-            std::string host_identifier_;
-            std::string host_species_;
-            std::string host_common_name_;
-            std::string health_;
-            std::string capture_method_status_;
-            std::string behavior_;
-            std::string location_;
-            std::string province_;
-            std::string country_;
-            std::string latitude_;
-            std::string longitude_;
-            std::string sample_material_;
-            std::string test_for_influenza_virus_;
-            Date        date_of_testing_;
-            std::string pool_id_;
-            std::string influenza_test_result_;
-            std::string ma_ct_value_;
-            std::string h5_status_;
-            std::string h5_ct_value_;
-            std::string h5_pathotype_;
-            std::string h7_status_;
-            std::string h7_ct_value_;
-            std::string h7_pathotype_;
-            std::string h9_status_;
-            std::string h9_ct_value_;
-            std::string emc_id_;
-            std::string ahvla_id_;
-            std::string first_egg_passage_;
-            std::string second_egg_passage_;
-            std::string passage_isolation_;
-            std::string virus_pathotype_;
-            std::string haemagglutinin_subtype_;
-            std::string neuraminidase_subtype_;
-            std::string serology_sample_id_;
-            Date        serology_testing_date_;
-            std::string serology_status_;
-            std::string record_id_;
+            TextField sample_id_;
+            Date      collection_date_;
+            TextField species_;
+            TextField age_;
+            TextField sex_;
+            TextField ring_number_;
+            TextField host_identifier_;
+            TextField host_species_;
+            TextField host_common_name_;
+            TextField health_;
+            TextField capture_method_status_;
+            TextField behavior_;
+            TextField location_;
+            TextField province_;
+            TextField country_;
+            TextField latitude_;
+            TextField longitude_;
+            TextField sample_material_;
+            TextField test_for_influenza_virus_;
+            Date      date_of_testing_;
+            TextField pool_id_;
+            TextField influenza_test_result_;
+            TextField ma_ct_value_;
+            TextField h5_status_;
+            TextField h5_ct_value_;
+            TextField h5_pathotype_;
+            TextField h7_status_;
+            TextField h7_ct_value_;
+            TextField h7_pathotype_;
+            TextField h9_status_;
+            TextField h9_ct_value_;
+            TextField emc_id_;
+            TextField ahvla_id_;
+            TextField first_egg_passage_;
+            TextField second_egg_passage_;
+            TextField passage_isolation_;
+            TextField virus_pathotype_;
+            TextField haemagglutinin_subtype_;
+            TextField neuraminidase_subtype_;
+            TextField serology_sample_id_;
+            Date      serology_testing_date_;
+            TextField serology_status_;
+            TextField record_id_;
         };
 
     } // namespace v2

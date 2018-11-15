@@ -20,9 +20,49 @@ std::string dtra::v2::Record::validate()
         }
     };
 
+    add("Sample ID", sample_id_);
     add("Collection Date", collection_date_);
+    add("Species", species_);
+    add("Age", age_);
+    add("Sex", sex_);
+    add("Ring #", ring_number_);
+    add("Host_identifier", host_identifier_);
+    add("Host Species", host_species_);
+    add("Host Common name", host_common_name_);
+    add("Health", health_);
+    add("Capture Method/Capture status", capture_method_status_);
+    add("Behavior", behavior_);
+    add("Location", location_);
+    add("Province", province_);
+    add("Country", country_);
+    add("Latitude", latitude_);
+    add("Longitude", longitude_);
+    add("Sample material", sample_material_);
+    add("Test for influenza virus", test_for_influenza_virus_);
     add("Date of Testing", date_of_testing_);
+    add("Pool ID", pool_id_);
+    add("Influenza test result", influenza_test_result_);
+    add("MA Ct Value", ma_ct_value_);
+    add("H5 Status", h5_status_);
+    add("H5 Ct Value", h5_ct_value_);
+    add("H5 Pathotype", h5_pathotype_);
+    add("H7 Status", h7_status_);
+    add("H7 Ct Value", h7_ct_value_);
+    add("H7 Pathotype", h7_pathotype_);
+    add("H9 Status", h9_status_);
+    add("H9 Ct Value", h9_ct_value_);
+    add("EMC ID", emc_id_);
+    add("AHVLA ID", ahvla_id_);
+    add("First Egg Passage", first_egg_passage_);
+    add("Second Egg Passage", second_egg_passage_);
+    add("Passage Isolation", passage_isolation_);
+    add("Virus Pathotype", virus_pathotype_);
+    add("Haemagglutinin Subtype", haemagglutinin_subtype_);
+    add("Neuraminidase Subtype", neuraminidase_subtype_);
+    add("Serology Sample ID", serology_sample_id_);
     add("Serology Testing Date", serology_testing_date_);
+    add("Serology Status", serology_status_);
+    // add("*record-id*"                  , record_id_);
 
     if (reports.empty())
         return {};
