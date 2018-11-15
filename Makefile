@@ -16,7 +16,7 @@ CXX_NAME = "clang++-7.0.0   "
 FS_LIB = -L$(CXX_ROOT)/lib -lc++fs
 CXX_LIB = -L$(CXX_ROOT)/lib -lc++ -lomp $(FS_LIB)
 WARNINGS = -Wno-weak-vtables -Weverything -Wno-c++98-compat -Wno-c++98-compat-pedantic -Wno-padded
-OPTIMIZATION = -O3 -mavx -mtune=intel
+OPTIMIZATION = -O3 -mavx -mtune=intel -DNDEBUG
 
 OUT_DIR = out
 DIST_DIR = dist
@@ -32,13 +32,14 @@ test: $(TARGETS)
 # -------------------- xlnt --------------------
 
 XLNT_RELEASE = 1.3.0
-XLNT_LIB = xlnt-$(XLNT_RELEASE)/source/libxlnt.dylib
+XLNT_LIB = xlnt-$(XLNT_RELEASE)/build/source/libxlnt.dylib
 XLNT_INCLUDE = xlnt-$(XLNT_RELEASE)/include
 
 xlnt: $(XLNT_LIB)
 
 $(XLNT_LIB): | xlnt-$(XLNT_RELEASE) cmake-installed
-	cd xlnt-$(XLNT_RELEASE) && mkdir build && ( cd build && cmake CMAKE_BUILD_TYPE=Release .. && cmake --build . CMAKE_BUILD_TYPE=Release )
+	cd xlnt-$(XLNT_RELEASE) && mkdir -p build && ( cd build && cmake -D CMAKE_BUILD_TYPE=Release -D TESTS=OFF -D CMAKE_CXX_FLAGS_RELEASE="$(OPTIMIZATION)" -D CMAKE_CXX_COMPILER="$(CXX)" .. && $(MAKE) )
+	test -x /usr/bin/install_name_tool && /usr/bin/install_name_tool -id $(abspath $(XLNT_LIB)) $(XLNT_LIB)
 
 xlnt-$(XLNT_RELEASE):
 	curl -OsL https://github.com/tfussell/xlnt/archive/v$(XLNT_RELEASE).tar.gz
@@ -55,7 +56,7 @@ cmake-installed:
 
 -include $(OUT_DIR)/*.d
 
-$(DIST_DIR)/%: $(OUT_DIR)/%.o $(patsubst %.cc,$(OUT_DIR)/%.o,$(COMMON_SOURCES)) | $(DIST_DIR)
+$(DIST_DIR)/%: $(OUT_DIR)/%.o $(patsubst %.cc,$(OUT_DIR)/%.o,$(COMMON_SOURCES)) | $(DIST_DIR) $(XLNT_LIB)
 	$(CXX) $(LDFLAGS) -o $@ $^ $(LDLIBS)
 
 # abspath below is to show full file path by __FILE__ macro used in logging
