@@ -12,56 +12,70 @@ void dtra::v2::Record::importer_default(const xlnt::cell& /*cell*/)
 
 std::string dtra::v2::Record::validate()
 {
+    // There are internal dependencies between fields of the record:
+    // 1. If "capture method/capture status" is K, then enforce "health' to be U
+    // 2. If "sample material" contains OP, convert it to TS.
+    //     Nicola 2014-11-28 13:48: OP and TS are pretty much the same
+    //     thing. One is oro-pharyngeal swab and one is tracheal
+    //     swab. No-one accurately records whether they get past the
+    //     larynx into the tracheal for each swab and likely it makes no
+    //     difference as virus will be in both sites.
+
+    if (capture_method_status_ == "K")
+        health_ = "U";
+    if (sample_material_ == "OP")
+        sample_material_ = "TS";
+
     std::vector<std::string> reports;
-    auto add = [&reports](std::string field_name, const auto& field) {
+    auto add_report = [&reports](std::string field_name, const auto& field) {
         if (const auto field_report = field.validate(); !field_report.empty()) {
             for (const auto& subreport : field_report)
                 reports.push_back(field_name + ": " + subreport);
         }
     };
 
-    add("Sample ID", sample_id_);
-    add("Collection Date", collection_date_);
-    add("Species", species_);
-    add("Age", age_);
-    add("Sex", sex_);
-    add("Ring #", ring_number_);
-    add("Host_identifier", host_identifier_);
-    add("Host Species", host_species_);
-    add("Host Common name", host_common_name_);
-    add("Health", health_);
-    add("Capture Method/Capture status", capture_method_status_);
-    add("Behavior", behavior_);
-    add("Location", location_);
-    add("Province", province_);
-    add("Country", country_);
-    add("Latitude", latitude_);
-    add("Longitude", longitude_);
-    add("Sample material", sample_material_);
-    add("Test for influenza virus", test_for_influenza_virus_);
-    add("Date of Testing", date_of_testing_);
-    add("Pool ID", pool_id_);
-    add("Influenza test result", influenza_test_result_);
-    add("MA Ct Value", ma_ct_value_);
-    add("H5 Status", h5_status_);
-    add("H5 Ct Value", h5_ct_value_);
-    add("H5 Pathotype", h5_pathotype_);
-    add("H7 Status", h7_status_);
-    add("H7 Ct Value", h7_ct_value_);
-    add("H7 Pathotype", h7_pathotype_);
-    add("H9 Status", h9_status_);
-    add("H9 Ct Value", h9_ct_value_);
-    add("EMC ID", emc_id_);
-    add("AHVLA ID", ahvla_id_);
-    add("First Egg Passage", first_egg_passage_);
-    add("Second Egg Passage", second_egg_passage_);
-    add("Passage Isolation", passage_isolation_);
-    add("Virus Pathotype", virus_pathotype_);
-    add("Haemagglutinin Subtype", haemagglutinin_subtype_);
-    add("Neuraminidase Subtype", neuraminidase_subtype_);
-    add("Serology Sample ID", serology_sample_id_);
-    add("Serology Testing Date", serology_testing_date_);
-    add("Serology Status", serology_status_);
+    add_report("Sample ID", sample_id_);
+    add_report("Collection Date", collection_date_);
+    add_report("Species", species_);
+    add_report("Age", age_);
+    add_report("Sex", sex_);
+    add_report("Ring #", ring_number_);
+    add_report("Host_identifier", host_identifier_);
+    add_report("Host Species", host_species_);
+    add_report("Host Common name", host_common_name_);
+    add_report("Health", health_);
+    add_report("Capture Method/Capture status", capture_method_status_);
+    add_report("Behavior", behavior_);
+    add_report("Location", location_);
+    add_report("Province", province_);
+    add_report("Country", country_);
+    add_report("Latitude", latitude_);
+    add_report("Longitude", longitude_);
+    add_report("Sample material", sample_material_);
+    add_report("Test for influenza virus", test_for_influenza_virus_);
+    add_report("Date of Testing", date_of_testing_);
+    add_report("Pool ID", pool_id_);
+    add_report("Influenza test result", influenza_test_result_);
+    add_report("MA Ct Value", ma_ct_value_);
+    add_report("H5 Status", h5_status_);
+    add_report("H5 Ct Value", h5_ct_value_);
+    add_report("H5 Pathotype", h5_pathotype_);
+    add_report("H7 Status", h7_status_);
+    add_report("H7 Ct Value", h7_ct_value_);
+    add_report("H7 Pathotype", h7_pathotype_);
+    add_report("H9 Status", h9_status_);
+    add_report("H9 Ct Value", h9_ct_value_);
+    add_report("EMC ID", emc_id_);
+    add_report("AHVLA ID", ahvla_id_);
+    add_report("First Egg Passage", first_egg_passage_);
+    add_report("Second Egg Passage", second_egg_passage_);
+    add_report("Passage Isolation", passage_isolation_);
+    add_report("Virus Pathotype", virus_pathotype_);
+    add_report("Haemagglutinin Subtype", haemagglutinin_subtype_);
+    add_report("Neuraminidase Subtype", neuraminidase_subtype_);
+    add_report("Serology Sample ID", serology_sample_id_);
+    add_report("Serology Testing Date", serology_testing_date_);
+    add_report("Serology Status", serology_status_);
     // add("*record-id*"                  , record_id_);
 
     if (reports.empty())

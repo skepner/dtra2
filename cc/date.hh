@@ -4,7 +4,9 @@
 #include <vector>
 #include <chrono>
 #include <ctime>
+
 #include "string.hh"
+#include "field.hh"
 
 // ----------------------------------------------------------------------
 
@@ -12,10 +14,12 @@ namespace dtra
 {
     inline namespace v2
     {
+        namespace field
+        {
         class Date
         {
          public:
-           Date()
+           Date(can_be_empty cbe = can_be_empty::yes) : can_be_empty_{cbe}
            {
                const auto now = std::chrono::system_clock::now();
                const auto now_c = std::chrono::system_clock::to_time_t(now);
@@ -93,6 +97,8 @@ namespace dtra
                                     errors_.push_back(::string::concat("invalid day ", day_, " (future date)"));
                             }
                         }
+                        else if (can_be_empty_ == can_be_empty::no)
+                            errors_.push_back("date cannot be empty");
                     }
                     return errors_;
                 }
@@ -132,10 +138,12 @@ namespace dtra
                 }
 
          private:
-            mutable std::vector<std::string> errors_;
+            const can_be_empty can_be_empty_ = can_be_empty::yes;
             size_t day_ = 0, month_ = 0, year_ = 0;
             std::tm now_;
+            mutable std::vector<std::string> errors_;
         };
+        }
     }
 }
 

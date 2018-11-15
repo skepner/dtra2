@@ -15,16 +15,6 @@ namespace dtra
 {
     inline namespace v2
     {
-        class TextField : public std::string
-        {
-         public:
-            using std::string::string;
-            TextField& operator=(const std::string& source) { std::string::operator=(source); return *this; }
-            TextField& operator=(std::string&& source) { std::string::operator=(std::move(source)); return *this; }
-
-            std::vector<std::string> validate() const { return {}; }
-        };
-
           // --------------------------------------------------
 
         class Record
@@ -85,49 +75,49 @@ namespace dtra
             void set_record_id(const xlnt::cell& cell);
 
           private:
-            TextField sample_id_;
-            Date      collection_date_;
-            TextField species_;
-            TextField age_;
-            TextField sex_;
-            TextField ring_number_;
-            TextField host_identifier_;
-            TextField host_species_;
-            TextField host_common_name_;
-            TextField health_;
-            TextField capture_method_status_;
-            TextField behavior_;
-            TextField location_;
-            TextField province_;
-            TextField country_;
-            TextField latitude_;
-            TextField longitude_;
-            TextField sample_material_;
-            TextField test_for_influenza_virus_;
-            Date      date_of_testing_;
-            TextField pool_id_;
-            TextField influenza_test_result_;
-            TextField ma_ct_value_;
-            TextField h5_status_;
-            TextField h5_ct_value_;
-            TextField h5_pathotype_;
-            TextField h7_status_;
-            TextField h7_ct_value_;
-            TextField h7_pathotype_;
-            TextField h9_status_;
-            TextField h9_ct_value_;
-            TextField emc_id_;
-            TextField ahvla_id_;
-            TextField first_egg_passage_;
-            TextField second_egg_passage_;
-            TextField passage_isolation_;
-            TextField virus_pathotype_;
-            TextField haemagglutinin_subtype_;
-            TextField neuraminidase_subtype_;
-            TextField serology_sample_id_;
-            Date      serology_testing_date_;
-            TextField serology_status_;
-            TextField record_id_;
+            field::Text sample_id_{field::can_be_empty::no};
+            field::Date collection_date_{field::can_be_empty::no};
+            field::Text species_;
+            field::Text age_{field::can_be_empty::no};
+            field::Text sex_{field::can_be_empty::no};
+            field::Text ring_number_;
+            field::Text host_identifier_;
+            field::Text host_species_;
+            field::Text host_common_name_;
+            field::Text health_;
+            field::Text capture_method_status_;
+            field::Text behavior_;
+            field::Text location_{field::can_be_empty::no};
+            field::Text province_;
+            field::Text country_;
+            field::Text latitude_;
+            field::Text longitude_;
+            field::Text sample_material_;
+            field::Text test_for_influenza_virus_;
+            field::Date date_of_testing_;
+            field::Text pool_id_;
+            field::Text influenza_test_result_;
+            field::Text ma_ct_value_;
+            field::Text h5_status_;
+            field::Text h5_ct_value_;
+            field::Text h5_pathotype_;
+            field::Text h7_status_;
+            field::Text h7_ct_value_;
+            field::Text h7_pathotype_;
+            field::Text h9_status_;
+            field::Text h9_ct_value_;
+            field::Text emc_id_;
+            field::Text ahvla_id_;
+            field::Text first_egg_passage_;
+            field::Text second_egg_passage_;
+            field::Text passage_isolation_;
+            field::Text virus_pathotype_;
+            field::Text haemagglutinin_subtype_;
+            field::Text neuraminidase_subtype_;
+            field::Text serology_sample_id_;
+            field::Date serology_testing_date_;
+            field::Text serology_status_;
+            field::Text record_id_;
         };
 
     } // namespace v2
