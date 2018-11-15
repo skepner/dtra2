@@ -4,7 +4,7 @@ TARGETS = \
     $(DIST_DIR)/dtra2 \
     $(DIST_DIR)/test-xlnt
 
-COMMON_SOURCES =
+COMMON_SOURCES = rjson.cc read-file.cc
 
 STD = c++17
 CXXFLAGS = -g -MMD $(OPTIMIZATION) $(PROFILE) -fPIC -std=$(STD) $(WARNINGS) -I$(XLNT_INCLUDE)

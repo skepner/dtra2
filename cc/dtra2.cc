@@ -4,6 +4,8 @@
 #include <regex>
 
 #include "xlnt.hh"
+#include "rjson.hh"
+#include "filesystem.hh"
 
 class Record
 {
@@ -25,6 +27,9 @@ int main(int argc, char* const argv[])
     try {
         if (argc < 2 || argc > 4)
             throw std::runtime_error("Usage: dtra2 <master.xlsx> [<merge-in.xlsx> [<output.xlsx>]]");
+        const auto data_dir = fs::path(argv[0]).parent_path() / "../data/";
+        const auto locations = rjson::parse_file(data_dir / "locations.json");
+        const auto birds = rjson::parse_file(data_dir / "bird-list.json");
         read_sheet(argv[1]);
         if (argc > 2)
             read_sheet(argv[2]);
