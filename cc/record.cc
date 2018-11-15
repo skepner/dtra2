@@ -10,8 +10,24 @@ void dtra::v2::Record::importer_default(const xlnt::cell& /*cell*/)
 
 // ----------------------------------------------------------------------
 
-void dtra::v2::Record::validate()
+std::string dtra::v2::Record::validate()
 {
+    std::vector<std::string> reports;
+    auto add = [&reports](std::string field_name, const auto& field) {
+        if (const auto field_report = field.validate(); !field_report.empty()) {
+            for (const auto& subreport : field_report)
+                reports.push_back(field_name + ": " + subreport);
+        }
+    };
+
+    add("Collection Date", collection_date_);
+    add("Date of Testing", date_of_testing_);
+    add("Serology Testing Date", serology_testing_date_);
+
+    if (reports.empty())
+        return {};
+
+    return sample_id_ + ":\n  " + string::join("\n  ", reports);
 
 } // dtra::v2::Record::validate
 

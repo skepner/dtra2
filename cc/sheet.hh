@@ -16,9 +16,11 @@ namespace dtra
             Sheet(const char* filename) { read(filename); }
 
             void read(const char* filename);
+            std::string report() const { return report_; }
 
          private:
             std::vector<Record> records_;
+            std::string report_; // empty, if there are no errors
         };
     }
 }

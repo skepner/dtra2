@@ -94,6 +94,7 @@ void dtra::v2::Sheet::read(const char* filename)
         }
     }
 
+    report_.clear();
     records_.resize(ws.highest_row() - 2);
     auto rows = ws.rows();
     auto row = rows.begin();
@@ -104,10 +105,9 @@ void dtra::v2::Sheet::read(const char* filename)
         for (const auto cell : *row) {
             std::invoke(importers[cell.reference().column()], record, cell);
         }
-        record.validate();
+        if (const auto report = record.validate(); !report.empty())
+            report_ = string::join("\n", {report_, report});
     }
-
-    std::cerr << "\nDEBUG: data " << records_.size() << '\n';
 
 } // dtra::v2::Sheet::read
 

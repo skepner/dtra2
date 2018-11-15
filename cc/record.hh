@@ -20,7 +20,7 @@ namespace dtra
           public:
             void importer_default(const xlnt::cell& cell);
 
-            void validate();
+            std::string validate();
 
             void set_sample_id(const xlnt::cell& cell);
             void set_collection_day(const xlnt::cell& cell);
