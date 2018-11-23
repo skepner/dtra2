@@ -83,6 +83,8 @@ namespace dtra
             static constexpr const char* h_status_message = "expected: P or N";
             static constexpr const char* re_pathotype = "^(LPAI|HPAI)$";
             static constexpr const char* pathotype_message = "expected: LPAI or HPAI";
+            static constexpr const char* re_egg_passage = "^(0|1)$";
+            static constexpr const char* egg_passage_message = "expected: 0 or 1";
 
             field::Uppercase sample_id_{re_sample_id, sample_id_message, field::can_be_empty::no};
             field::Date      collection_date_{field::can_be_empty::no};
@@ -117,15 +119,15 @@ namespace dtra
             field::Uppercase h9_ct_value_{re_ct, ct_message};
             field::Text      emc_id_;
             field::Text      ahvla_id_;
-            field::Text      first_egg_passage_;
-            field::Text      second_egg_passage_;
-            field::Text      passage_isolation_;
-            field::Text      virus_pathotype_;
-            field::Text      haemagglutinin_subtype_;
-            field::Text      neuraminidase_subtype_;
-            field::Text      serology_sample_id_;
+            field::Uppercase first_egg_passage_{re_egg_passage, egg_passage_message};
+            field::Uppercase second_egg_passage_{re_egg_passage, egg_passage_message};
+            field::Uppercase passage_isolation_{"^(E1|E2|NOT *PERFORMED|NEGATIVE)$", "expected: E1, E2, not performed"};
+            field::Uppercase virus_pathotype_{"^(LPAI|HPAI|NOT *IDENTIFIABLE)$", "expected: LPAI, HPAI, notidentifiable"};
+            field::Uppercase haemagglutinin_subtype_{"^((H[1-9]|H1[0-6])(/(H[1-9]|H1[0-6]))*|MIXED|H +NOT +DETERMINED)$", "expected: H1-H16, mixed, H not determined"};
+            field::Uppercase neuraminidase_subtype_{"^(N[1-9](/N[1-9])*|MIXED|N +NOT +DETERMINED)$", "expected: N1-N9, mixed, N not determined"};
+            field::Uppercase serology_sample_id_{re_sample_id, sample_id_message};
             field::Date      serology_testing_date_;
-            field::Text      serology_status_;
+            field::Uppercase serology_status_{"^(\\+|-|\\*)$", "expected: +, -, *"};
             field::Text      record_id_;
         };
 

@@ -8,17 +8,6 @@ sampleIdCeirs record =
 
 ----------------------------------------------------------------------
 
-  initField {fColumn=37, fTitle="first egg passage", fRecord=setFirsteggPassage, fExport=firstEggPassage, fValidator=validatorRegexToUpper "^(0|1)$" "expected first egg passage: 0, 1"},
-  initField {fColumn=38, fTitle="second egg passage", fRecord=setSecondeggPassage, fExport=secondEggPassage, fValidator=validatorRegexToUpper "^(0|1)$" "expected second egg passage: 0, 1"},
-  initField {fColumn=39, fTitle="passage isolation", fRecord=setPassageIsolation, fExport=passageIsolation, fValidator=validatorRegexToUpper "^(E1|E2|NOT *PERFORMED|NEGATIVE)$" "expected passage isolation: E1, E2, not performed"},
-  initField {fColumn=40, fTitle="virus pathotype", fRecord=setVirusPathotype, fExport=virusPathotype, fValidator=validatorRegexToUpper "^(LPAI|HPAI|NOT *IDENTIFIABLE)$" "expected virus pathotype: LPAI, HPAI, notidentifiable"},
-  initField {fColumn=41, fTitle="haemagglutinin subtype", fRecord=setHaemagglutininSubtype, fExport=haemagglutininSubtype, fValidator=validatorRegexToUpper "^((H[1-9]|H1[0-6])(/(H[1-9]|H1[0-6]))*|MIXED|H +NOT +DETERMINED)$" "expected haemagglutinin subtype: H1-H16, mixed, H not determined"},
-  initField {fColumn=42, fTitle="neuraminidase subtype", fRecord=setNeuraminidaseSubtype, fExport=neuraminidaseSubtype, fValidator=validatorRegexToUpper "^(N[1-9](/N[1-9])*|MIXED|N +NOT +DETERMINED)$" "expected neuraminidase subtype: N1-N9, mixed, N not determined"},
-  initField {fColumn=43, fTitle="serology sample id", fRecord=setSerologySampleId, fExport=serologySampleId, fValidator=validatorSampleId},
-  initField {fColumn=44, fTitle="serology testing day", fRecord=setSerologyTestingDatePart EDay, fExport=dateDay . serologyTestingDate, fValidator=validatorDay},
-  initField {fColumn=45, fTitle="serology testing month", fRecord=setSerologyTestingDatePart EMonth, fExport=dateMonth . serologyTestingDate, fValidator=validatorMonth},
-  initField {fColumn=46, fTitle="serology testing year", fRecord=setSerologyTestingDatePart EYear, fExport=dateYear . serologyTestingDate, fValidator=validatorYear},
-  initField {fColumn=47, fTitle="serology status", fRecord=setSerologyStatus, fExport=serologyStatus, fValidator=validatorRegex "^(\\+|-|\\*)$" "expected serology status: +, -, *"},
   initField {fColumn=48, fTitle="*uuid*", fRecord=setUuid, fExport=uuid, fValidator=validatorUuid, fIgnoreInMerge=True}
   ]
 
