@@ -15,6 +15,8 @@ namespace dtra
 {
     inline namespace v2
     {
+        class Directory;
+
           // --------------------------------------------------
 
         class Record
@@ -22,7 +24,7 @@ namespace dtra
           public:
             void importer_default(const xlnt::cell& cell);
 
-            std::string validate();
+            std::string validate(const Directory& locations, const Directory& birds);
 
             void set_sample_id(const xlnt::cell& cell);
             void set_collection_day(const xlnt::cell& cell);
@@ -129,6 +131,8 @@ namespace dtra
             field::Date      serology_testing_date_;
             field::Uppercase serology_status_{"^(\\+|-|\\*)$", "expected: +, -, *"};
             field::Text      record_id_;
+
+            void validate_hostspecies_commonname(const Directory& birds, std::vector<std::string>& reports);
         };
 
     } // namespace v2

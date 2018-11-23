@@ -71,6 +71,8 @@ static const std::map<std::string, field_importer_t> name_to_importer = {
 
 void dtra::v2::Sheet::read(const char* filename)
 {
+    report_.clear();
+
     xlnt::workbook wb;
     wb.load(filename);
     const auto ws = wb.active_sheet();
@@ -89,12 +91,12 @@ void dtra::v2::Sheet::read(const char* filename)
             importers[col] = &Record::set_record_id;
         }
         else {
-            std::cerr << "WARNING: unrecognized column label " << col.column_string() << " [" << label << "]\n";
+            report_ = string::join("\n", {report_, string::concat("unrecognized column label ", col.column_string(), " [", label, ']')});
+            // std::cerr << "WARNING: unrecognized column label " << col.column_string() << " [" << label << "]\n";
             importers[col] = &Record::importer_default;
         }
     }
 
-    report_.clear();
     records_.resize(ws.highest_row() - 2);
     auto rows = ws.rows();
     auto row = rows.begin();
@@ -105,7 +107,7 @@ void dtra::v2::Sheet::read(const char* filename)
         for (const auto cell : *row) {
             std::invoke(importers[cell.reference().column()], record, cell);
         }
-        if (const auto report = record.validate(); !report.empty())
+        if (const auto report = record.validate(locations_, birds_); !report.empty())
             report_ = string::join("\n", {report_, report});
     }
 

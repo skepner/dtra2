@@ -1,5 +1,6 @@
 #include "xlnt.hh"
 #include "record.hh"
+#include "directories.hh"
 
 // ----------------------------------------------------------------------
 
@@ -10,7 +11,7 @@ void dtra::v2::Record::importer_default(const xlnt::cell& /*cell*/)
 
 // ----------------------------------------------------------------------
 
-std::string dtra::v2::Record::validate()
+std::string dtra::v2::Record::validate(const Directory& locations, const Directory& birds)
 {
     // There are internal dependencies between fields of the record:
     // 1. If "capture method/capture status" is K, then enforce "health' to be U
@@ -78,12 +79,57 @@ std::string dtra::v2::Record::validate()
     add_report("Serology Status", serology_status_);
     // add("*record-id*"                  , record_id_);
 
+    validate_hostspecies_commonname(birds, reports);
+
     if (reports.empty())
         return {};
 
     return sample_id_ + ":\n  " + string::join("\n  ", reports);
 
 } // dtra::v2::Record::validate
+
+// ----------------------------------------------------------------------
+
+// Checks Host species and Host common name correspondence, in case
+// one of them is not filled, fill it (via Directories).  Returns
+// either list of errors or corrected map of records.
+
+void dtra::v2::Record::validate_hostspecies_commonname(const Directory& birds, std::vector<std::string>& reports)
+{
+    try {
+        if (!host_common_name_.empty() || !host_species_.empty()) {
+            std::string new_host_species, new_host_common_name;
+            if (!host_common_name_.empty()) {
+                new_host_species = birds.find("englishToScientific", string::lower(host_common_name_));
+                if (new_host_species.empty())
+                    throw std::runtime_error(string::concat("common name \"", host_common_name_, "\" not found in the database, species is empty"));
+                if (host_species_.empty()) {
+                    host_species_ = new_host_species;
+                }
+                else {
+                    new_host_common_name = birds.find("scientificToEnglish", string::lower(host_species_));
+                    if (new_host_common_name.empty())
+                        throw std::runtime_error(string::concat("host species \"", host_species_, "\" not found in the database, use \"", new_host_species, '"'));
+                    if (host_species_ != new_host_species)
+                        throw std::runtime_error(string::concat("common name \"", host_common_name_, "\" and host species \"", host_species_, "\" mismatch"));
+                }
+            }
+            else if (!host_species_.empty()) {
+                new_host_common_name = birds.find("scientificToEnglish", string::lower(host_species_));
+                if (new_host_common_name.empty())
+                    throw std::runtime_error(string::concat("host species \"", host_species_, "\" not found in the database, common name is empty"));
+                host_common_name_ = new_host_common_name;
+            }
+        }
+        else {
+            throw std::runtime_error("Neither host species nor host common name provided, please put one of them, the system will fill the other");
+        }
+    }
+    catch (std::exception& err) {
+        reports.push_back(err.what());
+    }
+
+} // dtra::v2::Record::validate_hostspecies_commonname
 
 // ----------------------------------------------------------------------
 

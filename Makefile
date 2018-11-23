@@ -5,7 +5,7 @@ TARGETS = \
     $(DIST_DIR)/test-xlnt
 
 COMMON_SOURCES = \
-    sheet.cc record.cc \
+    sheet.cc record.cc directories.cc \
     field.cc date.cc \
     rjson.cc read-file.cc
 
