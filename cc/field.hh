@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <cctype>
 #include <regex>
+#include <optional>
 
 // ----------------------------------------------------------------------
 
@@ -55,22 +56,18 @@ namespace dtra
             {
               public:
                 using Text::Text;
+                Uppercase(const char* validation_regex, const char* error_message, can_be_empty cbe = can_be_empty::yes)
+                    : Text(cbe), re_validator_{validation_regex}, error_message_{error_message} {}
                 using Text::operator=;
-
-             protected:
-                virtual void fix_on_assign() { std::transform(begin(), end(), begin(), [](unsigned char src) { return std::toupper(src); }); }
-            };
-
-            class SampleId : public Uppercase
-            {
-              public:
-                using Uppercase::Uppercase;
-                using Uppercase::operator=;
 
                 std::vector<std::string> validate() const;
 
+             protected:
+                virtual void fix_on_assign() { std::transform(begin(), end(), begin(), [](unsigned char src) { return std::toupper(src); }); }
+
              private:
-                static const std::regex re_validator_;
+                const std::optional<std::regex> re_validator_;
+                const std::string error_message_;
             };
 
         } // namespace field

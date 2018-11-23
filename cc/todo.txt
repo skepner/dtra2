@@ -8,70 +8,6 @@ sampleIdCeirs record =
 
 ----------------------------------------------------------------------
 
-  initField {fColumn= 0, fTitle="sample id", fRecord=setSampleId, fExport=sampleId, fExportCeirs=Just sampleIdCeirs, fValidator=validatorSampleId, fCanBeEmpty=False},
-  initField {fColumn= 1, fTitle="collection date", fRecord=setCollectionDate, fExport=collectionDate, fValidator=validatorDate, fCanBeEmpty=False},
-  initField {fColumn= 2, fTitle="species", fRecord=setSpecies, fExport=species},
-  initField {fColumn= 3, fTitle="age", fRecord=setAge, fExport=age, fValidator=validatorRegexToUpper "^[HAU]$" "expected Age: H, A, U", fCanBeEmpty=False},
-  initField {fColumn= 4, fTitle="sex", fRecord=setSex, fExport=sex, fValidator=validatorRegexToUpper "^[MFU]$" "expected Sex: M, F, U", fCanBeEmpty=False},
-  initField {fColumn= 5, fTitle="ring #", fRecord=setRingNumber, fExport=ringNumber},
-  initField {fColumn= 6, fTitle="host identifier", fRecord=setHostIdentifier, fExport=hostIdentifier, fValidator=validatorSampleId},
-  initField {fColumn= 7, fTitle="host species", fRecord=setHostSpecies, fExport=hostSpecies, fValidator=validatorHostSpecies}, -- 33k variants, column E in database/directories/Clements-Checklists-*.xlsx (http://www.birds.cornell.edu/clementschecklist/download/)
-  initField {fColumn= 8, fTitle="host common name", fRecord=setHostcommonName, fExport=hostCommonName, fValidator=validatorHostCommonName}, -- column F from the above sheet
-  initField {fColumn= 9, fTitle="health", fRecord=setHealth, fExport=health, fValidator=validatorRegexToUpper "^[HSDU]$" "expected Health: H(ealthy), S(ick), D(ead), U(undetermined)"},
-  initField {fColumn=10, fTitle="capture method/capture status", fRecord=setCapturemethodStatus, fExport=captureMethodStatus, fValidator=validatorCaptureMethod},
-  initField {fColumn=11, fTitle="behavior", fRecord=setBehavior, fExport=behavior, fValidator=validatorRegexToUpper "^(W|D|CW|U)$" "expected Behavior: W(ild), D(omestic), CW (captive-wild), U(known)"},
-  initField {fColumn=12, fTitle="location", fRecord=setLocation, fExport=location, fCanBeEmpty=False},
-  initField {fColumn=13, fTitle="province", fRecord=setProvince, fExport=province}, -- fRecord=, fValidator=validatorInvalid},
-  initField {fColumn=14, fTitle="country", fRecord=setCountry, fExport=country},
-  initField {fColumn=15, fTitle="latitude", fRecord=setLatitude, fExport=latitude, fValidator=validatorFloat (-90.0) 90.0},
-  initField {fColumn=16, fTitle="longitude", fRecord=setLongitude, fExport=longitude, fValidator=validatorFloat (-180.0) 180.0},
-  initField {fColumn=17, fTitle="sample material", fRecord=setSampleMaterial, fExport=sampleMaterial, fValidator=validatorSampleMaterial},
-  initField {fColumn=18, fTitle="test for influenza virus", fRecord=setTestforinfluenzaVirus, fExport=testForInfluenzaVirus}, -- fValidator=validatorTestFlu},
-  initField {fColumn=19, fTitle="date of testing", fRecord=setDateOfTesting, fExport=dateOfTesting, fValidator=validatorDate},
-  initField {fColumn=20, fTitle="pool id", fRecord=setPoolId, fExport=poolId, fValidator=validatorNumber},
-  initField {fColumn=21, fTitle="influenza test result", fRecord=setInfluenzatestResult, fExport=influenzaTestResult, fValidator=validatorRegexToUpper "^(P|N)$" "expected influenza test result: P, N"},
-  initField {fColumn=22, fTitle="ma ct value", fRecord=setMactValue, fExport=maCtValue, fValidator=validatorCtValue},
-  initField {fColumn=23, fTitle="h5 status", fRecord=setH5Status, fExport=h5Status, fValidator=validatorRegexToUpper "^(P|N)$" "expected H5 status: P, N"},
-  initField {fColumn=24, fTitle="h5 ct value", fRecord=setH5ctValue, fExport=h5CtValue, fValidator=validatorCtValue},
-  initField {fColumn=25, fTitle="h5 pathotype", fRecord=setH5Pathotype, fExport=h5Pathotype, fValidator=validatorRegexToUpper "^(LPAI|HPAI)$" "expected H5 pathotype: LPAI, HPAI"},
-  initField {fColumn=26, fTitle="h7 status", fRecord=setH7Status, fExport=h7Status, fValidator=validatorRegexToUpper "^(P|N)$" "expected H7 status: P, N"},
-  initField {fColumn=27, fTitle="h7 ct value", fRecord=setH7ctValue, fExport=h7CtValue, fValidator=validatorCtValue},
-  initField {fColumn=28, fTitle="h7 pathotype", fRecord=setH7Pathotype, fExport=h7Pathotype, fValidator=validatorRegexToUpper "^(LPAI|HPAI)$" "expected H7 pathotype: LPAI, HPAI"},
-  initField {fColumn=29, fTitle="h9 status", fRecord=setH9Status, fExport=h9Status, fValidator=validatorRegexToUpper "^(P|N)$" "expected H9 status: P, N"},
-  initField {fColumn=30, fTitle="h9 ct value", fRecord=setH9ctValue, fExport=h9CtValue, fValidator=validatorCtValue},
-  initField {fColumn=31, fTitle="emc id", fRecord=setEmcId, fExport=emcId},
-  initField {fColumn=32, fTitle="ahvla id", fRecord=setAhvlaId, fExport=ahvlaId},
-  initField {fColumn=33, fTitle="first egg passage", fRecord=setFirsteggPassage, fExport=firstEggPassage, fValidator=validatorRegexToUpper "^(0|1)$" "expected first egg passage: 0, 1"},
-  initField {fColumn=34, fTitle="second egg passage", fRecord=setSecondeggPassage, fExport=secondEggPassage, fValidator=validatorRegexToUpper "^(0|1)$" "expected second egg passage: 0, 1"},
-  initField {fColumn=35, fTitle="passage isolation", fRecord=setPassageIsolation, fExport=passageIsolation, fValidator=validatorRegexToUpper "^(E1|E2|NOT *PERFORMED|NEGATIVE)$" "expected passage isolation: E1, E2, not performed"},
-  initField {fColumn=36, fTitle="virus pathotype", fRecord=setVirusPathotype, fExport=virusPathotype, fValidator=validatorRegexToUpper "^(LPAI|HPAI|NOT *IDENTIFIABLE)$" "expected virus pathotype: LPAI, HPAI, notidentifiable"},
-  initField {fColumn=37, fTitle="haemagglutinin subtype", fRecord=setHaemagglutininSubtype, fExport=haemagglutininSubtype, fValidator=validatorRegexToUpper "^((H[1-9]|H1[0-6])(/(H[1-9]|H1[0-6]))*|MIXED|H +NOT +DETERMINED)$" "expected haemagglutinin subtype: H1-H16, mixed, H not determined"},
-  initField {fColumn=38, fTitle="neuraminidase subtype", fRecord=setNeuraminidaseSubtype, fExport=neuraminidaseSubtype, fValidator=validatorRegexToUpper "^(N[1-9](/N[1-9])*|MIXED|N +NOT +DETERMINED)$" "expected neuraminidase subtype: N1-N9, mixed, N not determined"},
-  initField {fColumn=39, fTitle="serology sample id", fRecord=setSerologySampleId, fExport=serologySampleId, fValidator=validatorSampleId},
-  initField {fColumn=40, fTitle="serology testing date", fRecord=setSerologyTestingDate, fExport=serologyTestingDate, fValidator=validatorDate},
-  initField {fColumn=41, fTitle="serology status", fRecord=setSerologyStatus, fExport=serologyStatus, fValidator=validatorRegex "^(\\+|-|\\*)$" "expected serology status: +, -, *"},
-  initField {fColumn=42, fTitle="*uuid*", fRecord=setUuid, fExport=uuid, fValidator=validatorUuid, fIgnoreInMerge=True}
-  ]
-
-fields_v2 :: [Field]
-fields_v2 = [
-  initField {fColumn= 0, fTitle="sample id", fRecord=setSampleId, fExport=sampleId, fExportCeirs=Just sampleIdCeirs, fValidator=validatorSampleId, fCanBeEmpty=False},
-  initField {fColumn= 1, fTitle="collection day", fRecord=setCollectionDatePart EDay, fExport=dateDay . collectionDate, fValidator=validatorDay, fCanBeEmpty=False},
-  initField {fColumn= 2, fTitle="collection month", fRecord=setCollectionDatePart EMonth, fExport=dateMonth . collectionDate, fValidator=validatorMonth, fCanBeEmpty=False},
-  initField {fColumn= 3, fTitle="collection year", fRecord=setCollectionDatePart EYear, fExport=dateYear . collectionDate, fValidator=validatorYear, fCanBeEmpty=False},
-  initField {fColumn= 4, fTitle="species", fRecord=setSpecies, fExport=species},
-  initField {fColumn= 5, fTitle="age", fRecord=setAge, fExport=age, fValidator=validatorRegexToUpper "^[HAU]$" "expected Age: H, A, U", fCanBeEmpty=False},
-  initField {fColumn= 6, fTitle="sex", fRecord=setSex, fExport=sex, fValidator=validatorRegexToUpper "^[MFU]$" "expected Sex: M, F, U", fCanBeEmpty=False},
-  initField {fColumn= 7, fTitle="ring #", fRecord=setRingNumber, fExport=ringNumber},
-  initField {fColumn= 8, fTitle="host identifier", fRecord=setHostIdentifier, fExport=hostIdentifier, fValidator=validatorSampleId},
-  initField {fColumn= 9, fTitle="host species", fRecord=setHostSpecies, fExport=hostSpecies, fValidator=validatorHostSpecies}, -- 33k variants, column E in database/directories/Clements-Checklists-*.xlsx (http://www.birds.cornell.edu/clementschecklist/download/)
-  initField {fColumn=10, fTitle="host common name", fRecord=setHostcommonName, fExport=hostCommonName, fValidator=validatorHostCommonName}, -- column F from the above sheet
-  initField {fColumn=11, fTitle="health", fRecord=setHealth, fExport=health, fValidator=validatorRegexToUpper "^[HSDU]$" "expected Health: H(ealthy), S(ick), D(ead), U(undetermined)"},
-  initField {fColumn=12, fTitle="capture method/capture status", fRecord=setCapturemethodStatus, fExport=captureMethodStatus, fValidator=validatorCaptureMethod},
-  initField {fColumn=13, fTitle="behavior", fRecord=setBehavior, fExport=behavior, fValidator=validatorRegexToUpper "^(W|D|CW|U)$" "expected Behavior: W(ild), D(omestic), CW (captive-wild), U(known)"},
-  initField {fColumn=14, fTitle="location", fRecord=setLocation, fExport=location, fCanBeEmpty=False},
-  initField {fColumn=15, fTitle="province", fRecord=setProvince, fExport=province}, -- fRecord=, fValidator=validatorInvalid},
-  initField {fColumn=16, fTitle="country", fRecord=setCountry, fExport=country},
   initField {fColumn=17, fTitle="latitude", fRecord=setLatitude, fExport=latitude, fValidator=validatorFloat (-90.0) 90.0},
   initField {fColumn=18, fTitle="longitude", fRecord=setLongitude, fExport=longitude, fValidator=validatorFloat (-180.0) 180.0},
   initField {fColumn=19, fTitle="sample material", fRecord=setSampleMaterial, fExport=sampleMaterial, fValidator=validatorSampleMaterial},
@@ -290,26 +226,6 @@ showInt2Digits int = T.pack $ if int < 10 then "0" ++ show int else show int
 
 ----------------------------------------------------------------------
 
-validatorSampleId :: Validator
-validatorSampleId = validatorRegexToUpper "^(217|DT)-[0-9]+$" "expected: 217-xxxxx, DT-xxxxx"
-
-----------------------------------------------------------------------
-
--- A=Active surveillance (e.g. trap); sampling not initiated by an outbreak
--- K=Opportunistically sampled (e.g., hunter-killed or killed in order to take sample)
--- O=Sample collected in response to outbreak (sick or dying birds)
--- M=Market Sample
--- P=Sample obtained from a pet
--- Z=Sample obtained from a zoo
--- F=Farm Sample
--- OT= Other; plus free text (e.g. OT-restaurant)
--- U=Undetermined
-
-validatorCaptureMethod :: Validator
-validatorCaptureMethod = validatorRegexToUpper "^(A|K|O|M|P|Z|F|U|OT.*)$" "expected: A, K, O, M, P, Z, F, OT-<text>, U"
-
-----------------------------------------------------------------------
-
 validatorFloat :: Float -> Float -> Validator
 validatorFloat minValue maxValue =
   let validator :: Validator
@@ -371,14 +287,6 @@ validatorUuid :: Validator
 validatorUuid = validatorRegex "^.+$" "expected: orinating database id within DTRA system"
 
 ----------------------------------------------------------------------
-
-validatorHostSpecies :: Validator
--- validatorHostSpecies = validatorDirectories "you may omit Host species and fill Host common name, the former will be auto-filled by the system" Dirs.birdListFindScientific'
-validatorHostSpecies _ cell = Right (cellAsText cell) -- validated by Import.processDTRA.updateHostSpeciesCommonName
-
-validatorHostCommonName :: Validator
--- validatorHostCommonName = validatorDirectories "you may fill Host species and omit Host common name, the latter will be auto-filled by the system" Dirs.birdListFindEnglish'
-validatorHostCommonName _ cell = Right (cellAsText cell) -- validated by Import.processDTRA.updateHostSpeciesCommonName
 
 validatorDirectories :: T.Text -> (Dirs.Directories -> T.Text -> Maybe a) -> Validator
 validatorDirectories err find directories cell =
@@ -472,3 +380,135 @@ fieldsToExportCeirs :: [Field]
 fieldsToExportCeirs = fieldsToExport "1" (\f -> fTitle f /= "*uuid*")
 
 ----------------------------------------------------------------------
+
+    ----------------------------------------------------------------------
+    {-| Checks Host species and Host common name correspondence, in case one of them is not filled, fill it (via Directories).
+        Returns either list of errors or corrected map of records.
+     -}
+    updateHostSpeciesCommonName :: R.MapRecords -> R.EitherErrorsRecords
+    updateHostSpeciesCommonName {- records -} =
+      checkErrors checkRecord {- records -}
+      where
+        checkRecord record =
+          let notFound = "*not found*"
+              species = R.hostSpecies record
+              species' = U.normalizeText species
+              commonName = R.hostCommonName record
+              commonName' = U.normalizeText commonName
+              newSpecies = fromMaybe notFound (Dirs.birdListFindEnglish directories commonName')
+              newCommonName = fromMaybe notFound (Dirs.birdListFindScientific directories species')
+              err = Left [T.toStrict $ F.format (F.text % ": $$$ host species (" % F.text % ") and host common name (" % F.text % ") do not correspond to each other (you may fill one of those fields and let the system to fill the other)")
+                          (R.sampleId record) species commonName]
+              errNull = Left [T.toStrict $ F.format (F.text % ": Neither host species nor host common name provided, please put one of them, the system will fill the other")
+                              (R.sampleId record)]
+              update cn sp
+                --- | trace ("updateHostSpeciesCommonName: " ++ T.unpack (F.format (F.text % ": host species: \"" % F.text % "\"  commnon name: \"" % F.text % "\"") (R.sampleId record) species commonName)) False = undefined
+                | T.null cn && newCommonName /= notFound = -- correct species, empty common name
+                    Right $ record { R.hostCommonName = newCommonName }
+                | T.null sp && newSpecies /= notFound = -- correct common name, empty species
+                    Right $ record { R.hostSpecies = newSpecies }
+                | not (T.null sp) && cn == U.normalizeText newCommonName = -- both fields non-empty, correct, correspond to each other
+                    Right record
+                -- errors
+                | T.null cn && T.null sp = -- both fields empty
+                    errNull
+                | T.null cn && newCommonName == notFound = -- empty common name, species not found
+                    Left [T.toStrict $ F.format (F.text % ": host species \"" % F.text % "\" not found in the database, common name is empty") (R.sampleId record) species]
+                | T.null sp && newSpecies == notFound = -- empty species, common name not found
+                    Left [T.toStrict $ F.format (F.text % ": common name \"" % F.text % "\" not found in the database, species is empty") (R.sampleId record) commonName]
+                | not (T.null cn) && not (T.null sp) && newSpecies == notFound && newCommonName /= notFound = -- common name not found, species found
+                    Left [T.toStrict $ F.format (F.text % ": common name \"" % F.text % "\" not found in the database, species \"" % F.text % "\" found and gives common name \"" % F.text % "\"") (R.sampleId record) commonName species newCommonName]
+                | not (T.null cn) && not (T.null sp) && newSpecies /= notFound && newCommonName == notFound = -- common name found, species not found
+                    Left [T.toStrict $ F.format (F.text % ": species \"" % F.text % "\" not found in the database, common name \"" % F.text % "\" found and gives species \"" % F.text % "\"") (R.sampleId record) species commonName newSpecies]
+                | not (T.null cn) && not (T.null sp) && newSpecies /= notFound && newCommonName /= notFound = -- both found, but do not correspond
+                    Left [T.toStrict $ F.format (F.text % ": common name \"" % F.text % "\" (--> " % F.text % ") and species \"" % F.text % "\" (--> " % F.text % ") found in the database but do not correspond to each other") (R.sampleId record) commonName newSpecies species newCommonName]
+                | not (T.null cn) && not (T.null sp) && newSpecies == notFound && newCommonName == notFound = -- both not found
+                    Left [T.toStrict $ F.format (F.text % ": neither common name \"" % F.text % "\" nor species \"" % F.text % "\" found in the database") (R.sampleId record) commonName species]
+                | otherwise = err -- trace ("sp:" ++ show cn ++ "->" ++ show newSpecies ++ " cn:" ++ show sp ++ "->" ++ show newCommonName) err
+          in
+           update commonName' species'
+
+    updateLocations :: R.MapRecords -> R.EitherErrorsRecords
+    updateLocations =
+      checkErrors checkRecord
+      where
+        checkRecord record =
+          let sampleId = R.sampleId record
+              location = R.location record
+              locationRecMaybe = Dirs.locationFind' directories location
+              locationRec = fromJust locationRecMaybe
+              err fieldName got expected = Left [T.concat [sampleId, ": invalid ", fieldName, " for ", location, ": ", got, " (expected: ", expected, ")",
+                                                           ", please leave Province, Country, Latitude, Longitude fields empty to allow system to fill them with the correct content"]]
+              checkField fieldName gotF expectedF = unless
+                                                    (T.null (gotF record) || U.normalizeText (expectedF locationRec) == U.normalizeText (gotF record))
+                                                    (err fieldName (gotF record) (expectedF locationRec))
+              checkFieldFloat fieldName gotF expectedF = unless
+                                                    (T.null (gotF record) || readFloat (expectedF locationRec) == readFloat (gotF record))
+                                                    (err fieldName (gotF record) (expectedF locationRec))
+              readFloat :: T.Text -> Float
+              readFloat source =
+                case (readMaybe . T.unpack . U.normalizeText) source of
+                 Just f -> f
+                 Nothing -> trace ("updateLocations: No float in " ++ T.unpack source) (-1.0)
+          in do
+            when (isNothing locationRecMaybe) (Left [T.concat [sampleId, ": location not found: ", location]])
+            checkField "province" R.province Dirs.province
+            checkField "country" R.country Dirs.country
+            checkFieldFloat "latitude" R.latitude Dirs.latitude
+            checkFieldFloat "longitude" R.longitude Dirs.longitude
+            Right record { R.province=Dirs.province locationRec, R.country=Dirs.country locationRec, R.latitude=Dirs.latitude locationRec, R.longitude=Dirs.longitude locationRec }
+
+    -- Nic 2015-02-10: If 'domesticus' in the species field please autofill behavior as D, All other species entries please autofill behavior as W
+    updateBehavior :: R.MapRecords -> R.EitherErrorsRecords
+    updateBehavior =
+      checkErrors checkRecord
+      where
+        checkRecord :: R.Record -> R.EitherErrorsRecord
+        checkRecord record =
+          let species = U.normalizeText $ R.hostSpecies record
+              domesticus = "domesticus" `T.isInfixOf` species
+              behavior_orig = R.behavior record
+              behavior = if not (T.null behavior_orig) then behavior_orig else if domesticus then "D" else "W"
+          in
+           Right record { R.behavior = behavior }
+
+    -- In version 2 format date fields are constructed from parts (day, month, year) without checking
+    checkDates :: R.MapRecords -> R.EitherErrorsRecords
+    checkDates =
+      checkErrors checkRecord
+      where
+        checkRecord :: R.Record -> R.EitherErrorsRecord
+        checkRecord r =
+          case errors of
+           [] -> Right r
+           _  -> Left errors
+          where
+            errors =
+              concat $ lefts [ validateField "collection date" R.collectionDate
+                             , validateField "date of testing" R.dateOfTesting
+                             , validateField "serology testing date" R.serologyTestingDate
+                             , compareDateFields "collection date > date of testing" R.collectionDate R.dateOfTesting
+                             , compareDateFields "collection date > serology testing date" R.collectionDate R.serologyTestingDate
+                             ]
+            validateField name field =
+              case validateDate (field r) of
+               Left err -> Left err
+               Right _ -> Right r
+              where
+                validateDate date =
+                  case (T.null date, parseDateDayFirst date) of
+                   (False, Left err) -> Left [T.concat [R.sampleId r, ": ", name, ": ", err, ": ", date]]
+                   _                 -> Right date
+            compareDateFields :: T.Text -> R.RecordFieldGetter -> R.RecordFieldGetter -> R.EitherErrorsRecord
+            compareDateFields message field1 field2 =
+              case (parseDateDayFirst (field1 r), parseDateDayFirst (field2 r)) of
+               (Right d1, Right d2) | d1 > d2 -> Left [T.concat [R.sampleId r, ": ", message, ": ", (field1 r), " vs. ", (field2 r)]]
+               _                              -> Right r -- ignore date parsing errors, they were reported by validateField
+
+    checkErrors checker records =
+      let checked = Map.map checker records
+          (map_errors, map_records) = Map.mapEither id checked
+      in
+       if Map.null map_errors
+       then Right map_records
+       else Left (concat $ Map.elems map_errors)

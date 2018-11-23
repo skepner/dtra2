@@ -478,6 +478,20 @@ void dtra::v2::Record::set_record_id(const xlnt::cell& cell)
 } // dtra::v2::Record::set_record_id
 
 // ----------------------------------------------------------------------
+
+// capture_method_status_
+// ----------------------
+// A=Active surveillance (e.g. trap); sampling not initiated by an outbreak
+// K=Opportunistically sampled (e.g., hunter-killed or killed in order to take sample)
+// O=Sample collected in response to outbreak (sick or dying birds)
+// M=Market Sample
+// P=Sample obtained from a pet
+// Z=Sample obtained from a zoo
+// F=Farm Sample
+// OT= Other; plus free text (e.g. OT-restaurant)
+// U=Undetermined
+
+// ----------------------------------------------------------------------
 /// Local Variables:
 /// eval: (if (fboundp 'eu-rename-buffer) (eu-rename-buffer))
 /// End:
