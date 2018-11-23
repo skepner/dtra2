@@ -8,24 +8,6 @@ sampleIdCeirs record =
 
 ----------------------------------------------------------------------
 
-  initField {fColumn=19, fTitle="sample material", fRecord=setSampleMaterial, fExport=sampleMaterial, fValidator=validatorSampleMaterial},
-  initField {fColumn=20, fTitle="test for influenza virus", fRecord=setTestforinfluenzaVirus, fExport=testForInfluenzaVirus}, -- fValidator=validatorTestFlu},
-  initField {fColumn=21, fTitle="day of testing", fRecord=setDateOfTestingPart EDay, fExport=dateDay . dateOfTesting, fValidator=validatorDay},
-  initField {fColumn=22, fTitle="month of testing", fRecord=setDateOfTestingPart EMonth, fExport=dateMonth . dateOfTesting, fValidator=validatorMonth},
-  initField {fColumn=23, fTitle="year of testing", fRecord=setDateOfTestingPart EYear, fExport=dateYear . dateOfTesting, fValidator=validatorYear},
-  initField {fColumn=24, fTitle="pool id", fRecord=setPoolId, fExport=poolId, fValidator=validatorNumber},
-  initField {fColumn=25, fTitle="influenza test result", fRecord=setInfluenzatestResult, fExport=influenzaTestResult, fValidator=validatorRegexToUpper "^(P|N)$" "expected influenza test result: P, N"},
-  initField {fColumn=26, fTitle="ma ct value", fRecord=setMactValue, fExport=maCtValue, fValidator=validatorCtValue},
-  initField {fColumn=27, fTitle="h5 status", fRecord=setH5Status, fExport=h5Status, fValidator=validatorRegexToUpper "^(P|N)$" "expected H5 status: P, N"},
-  initField {fColumn=28, fTitle="h5 ct value", fRecord=setH5ctValue, fExport=h5CtValue, fValidator=validatorCtValue},
-  initField {fColumn=29, fTitle="h5 pathotype", fRecord=setH5Pathotype, fExport=h5Pathotype, fValidator=validatorRegexToUpper "^(LPAI|HPAI)$" "expected H5 pathotype: LPAI, HPAI"},
-  initField {fColumn=30, fTitle="h7 status", fRecord=setH7Status, fExport=h7Status, fValidator=validatorRegexToUpper "^(P|N)$" "expected H7 status: P, N"},
-  initField {fColumn=31, fTitle="h7 ct value", fRecord=setH7ctValue, fExport=h7CtValue, fValidator=validatorCtValue},
-  initField {fColumn=32, fTitle="h7 pathotype", fRecord=setH7Pathotype, fExport=h7Pathotype, fValidator=validatorRegexToUpper "^(LPAI|HPAI)$" "expected H7 pathotype: LPAI, HPAI"},
-  initField {fColumn=33, fTitle="h9 status", fRecord=setH9Status, fExport=h9Status, fValidator=validatorRegexToUpper "^(P|N)$" "expected H9 status: P, N"},
-  initField {fColumn=34, fTitle="h9 ct value", fRecord=setH9ctValue, fExport=h9CtValue, fValidator=validatorCtValue},
-  initField {fColumn=35, fTitle="emc id", fRecord=setEmcId, fExport=emcId},
-  initField {fColumn=36, fTitle="ahvla id", fRecord=setAhvlaId, fExport=ahvlaId},
   initField {fColumn=37, fTitle="first egg passage", fRecord=setFirsteggPassage, fExport=firstEggPassage, fValidator=validatorRegexToUpper "^(0|1)$" "expected first egg passage: 0, 1"},
   initField {fColumn=38, fTitle="second egg passage", fRecord=setSecondeggPassage, fExport=secondEggPassage, fValidator=validatorRegexToUpper "^(0|1)$" "expected second egg passage: 0, 1"},
   initField {fColumn=39, fTitle="passage isolation", fRecord=setPassageIsolation, fExport=passageIsolation, fValidator=validatorRegexToUpper "^(E1|E2|NOT *PERFORMED|NEGATIVE)$" "expected passage isolation: E1, E2, not performed"},
@@ -224,41 +206,8 @@ showInt2Digits int = T.pack $ if int < 10 then "0" ++ show int else show int
 
 ----------------------------------------------------------------------
 
--- TS = Tracheal swab
--- OP = Oral-pharyngeal
--- C = Cloacal
--- F = Feces
--- COP = Cloacal and oral-pharyngeal samples, when combined into one sample
--- B= Blood
--- SR = Serum
--- TT = Tissue from trachea
--- CF = Cloacal and fecal samples, when combined into one sample
--- TB = Tissue from brain
--- TO = Other tissue
--- L = Lungs
--- S = Soil
--- W = Water
--- O = Other; plus free typed out text (e.g. O - feather)
--- U = Unknown
-
-validatorSampleMaterial :: Validator
-validatorSampleMaterial = validatorRegexToUpper "^(TS|OP|C|F|COP|B|SR|TT|CF|TB|TO|L|S|W|O[- ].+|X.*)$" "expected: TS, OP, C, F, COP, B, SR, TT, CF, TB, TO, L, S, W, O -<text>, X-<text>"
-
-----------------------------------------------------------------------
-
-validatorTestFlu :: Validator
--- validatorTestFlu = validatorRegexToUpper "^RRT-PCR +(MA|H5|H7)$" "expected: RRT-PCR MA, RRT-PCR H5, RRT-PCR H7"
-validatorTestFlu = validatorRegexToUpper "^RRT-PCR +MA( *,? *RRT-PCR +H5( *,? *RRT-PCR +H7)?)?$" "expected: RRT-PCR MA, RRT-PCR H5, RRT-PCR H7"
-
-----------------------------------------------------------------------
-
 validatorNumber :: Validator
 validatorNumber = validatorRegex "^[0-9\\.]+$" "expected: numeric value"
-
-----------------------------------------------------------------------
-
-validatorCtValue :: Validator
-validatorCtValue = validatorRegex "^[<>]?[0-9]+(\\.[0-9][0-9]?)?$" "expected: valid CT Value"
 
 ----------------------------------------------------------------------
 

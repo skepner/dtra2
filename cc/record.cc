@@ -491,6 +491,25 @@ void dtra::v2::Record::set_record_id(const xlnt::cell& cell)
 // OT= Other; plus free text (e.g. OT-restaurant)
 // U=Undetermined
 
+// sample_material_
+// ----------------------
+// TS = Tracheal swab
+// OP = Oral-pharyngeal
+// C = Cloacal
+// F = Feces
+// COP = Cloacal and oral-pharyngeal samples, when combined into one sample
+// B= Blood
+// SR = Serum
+// TT = Tissue from trachea
+// CF = Cloacal and fecal samples, when combined into one sample
+// TB = Tissue from brain
+// TO = Other tissue
+// L = Lungs
+// S = Soil
+// W = Water
+// O = Other; plus free typed out text (e.g. O - feather)
+// U = Unknown
+
 // ----------------------------------------------------------------------
 /// Local Variables:
 /// eval: (if (fboundp 'eu-rename-buffer) (eu-rename-buffer))
