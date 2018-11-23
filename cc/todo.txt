@@ -1,0 +1,474 @@
+sampleIdCeirs :: Record -> T.Text
+sampleIdCeirs record =
+  let raw = sampleId record
+      prependCIP116 = T.take 4 raw == "217-"
+  in if prependCIP116
+     then T.concat ["CIP116", raw]
+     else raw
+
+----------------------------------------------------------------------
+
+  initField {fColumn= 0, fTitle="sample id", fRecord=setSampleId, fExport=sampleId, fExportCeirs=Just sampleIdCeirs, fValidator=validatorSampleId, fCanBeEmpty=False},
+  initField {fColumn= 1, fTitle="collection date", fRecord=setCollectionDate, fExport=collectionDate, fValidator=validatorDate, fCanBeEmpty=False},
+  initField {fColumn= 2, fTitle="species", fRecord=setSpecies, fExport=species},
+  initField {fColumn= 3, fTitle="age", fRecord=setAge, fExport=age, fValidator=validatorRegexToUpper "^[HAU]$" "expected Age: H, A, U", fCanBeEmpty=False},
+  initField {fColumn= 4, fTitle="sex", fRecord=setSex, fExport=sex, fValidator=validatorRegexToUpper "^[MFU]$" "expected Sex: M, F, U", fCanBeEmpty=False},
+  initField {fColumn= 5, fTitle="ring #", fRecord=setRingNumber, fExport=ringNumber},
+  initField {fColumn= 6, fTitle="host identifier", fRecord=setHostIdentifier, fExport=hostIdentifier, fValidator=validatorSampleId},
+  initField {fColumn= 7, fTitle="host species", fRecord=setHostSpecies, fExport=hostSpecies, fValidator=validatorHostSpecies}, -- 33k variants, column E in database/directories/Clements-Checklists-*.xlsx (http://www.birds.cornell.edu/clementschecklist/download/)
+  initField {fColumn= 8, fTitle="host common name", fRecord=setHostcommonName, fExport=hostCommonName, fValidator=validatorHostCommonName}, -- column F from the above sheet
+  initField {fColumn= 9, fTitle="health", fRecord=setHealth, fExport=health, fValidator=validatorRegexToUpper "^[HSDU]$" "expected Health: H(ealthy), S(ick), D(ead), U(undetermined)"},
+  initField {fColumn=10, fTitle="capture method/capture status", fRecord=setCapturemethodStatus, fExport=captureMethodStatus, fValidator=validatorCaptureMethod},
+  initField {fColumn=11, fTitle="behavior", fRecord=setBehavior, fExport=behavior, fValidator=validatorRegexToUpper "^(W|D|CW|U)$" "expected Behavior: W(ild), D(omestic), CW (captive-wild), U(known)"},
+  initField {fColumn=12, fTitle="location", fRecord=setLocation, fExport=location, fCanBeEmpty=False},
+  initField {fColumn=13, fTitle="province", fRecord=setProvince, fExport=province}, -- fRecord=, fValidator=validatorInvalid},
+  initField {fColumn=14, fTitle="country", fRecord=setCountry, fExport=country},
+  initField {fColumn=15, fTitle="latitude", fRecord=setLatitude, fExport=latitude, fValidator=validatorFloat (-90.0) 90.0},
+  initField {fColumn=16, fTitle="longitude", fRecord=setLongitude, fExport=longitude, fValidator=validatorFloat (-180.0) 180.0},
+  initField {fColumn=17, fTitle="sample material", fRecord=setSampleMaterial, fExport=sampleMaterial, fValidator=validatorSampleMaterial},
+  initField {fColumn=18, fTitle="test for influenza virus", fRecord=setTestforinfluenzaVirus, fExport=testForInfluenzaVirus}, -- fValidator=validatorTestFlu},
+  initField {fColumn=19, fTitle="date of testing", fRecord=setDateOfTesting, fExport=dateOfTesting, fValidator=validatorDate},
+  initField {fColumn=20, fTitle="pool id", fRecord=setPoolId, fExport=poolId, fValidator=validatorNumber},
+  initField {fColumn=21, fTitle="influenza test result", fRecord=setInfluenzatestResult, fExport=influenzaTestResult, fValidator=validatorRegexToUpper "^(P|N)$" "expected influenza test result: P, N"},
+  initField {fColumn=22, fTitle="ma ct value", fRecord=setMactValue, fExport=maCtValue, fValidator=validatorCtValue},
+  initField {fColumn=23, fTitle="h5 status", fRecord=setH5Status, fExport=h5Status, fValidator=validatorRegexToUpper "^(P|N)$" "expected H5 status: P, N"},
+  initField {fColumn=24, fTitle="h5 ct value", fRecord=setH5ctValue, fExport=h5CtValue, fValidator=validatorCtValue},
+  initField {fColumn=25, fTitle="h5 pathotype", fRecord=setH5Pathotype, fExport=h5Pathotype, fValidator=validatorRegexToUpper "^(LPAI|HPAI)$" "expected H5 pathotype: LPAI, HPAI"},
+  initField {fColumn=26, fTitle="h7 status", fRecord=setH7Status, fExport=h7Status, fValidator=validatorRegexToUpper "^(P|N)$" "expected H7 status: P, N"},
+  initField {fColumn=27, fTitle="h7 ct value", fRecord=setH7ctValue, fExport=h7CtValue, fValidator=validatorCtValue},
+  initField {fColumn=28, fTitle="h7 pathotype", fRecord=setH7Pathotype, fExport=h7Pathotype, fValidator=validatorRegexToUpper "^(LPAI|HPAI)$" "expected H7 pathotype: LPAI, HPAI"},
+  initField {fColumn=29, fTitle="h9 status", fRecord=setH9Status, fExport=h9Status, fValidator=validatorRegexToUpper "^(P|N)$" "expected H9 status: P, N"},
+  initField {fColumn=30, fTitle="h9 ct value", fRecord=setH9ctValue, fExport=h9CtValue, fValidator=validatorCtValue},
+  initField {fColumn=31, fTitle="emc id", fRecord=setEmcId, fExport=emcId},
+  initField {fColumn=32, fTitle="ahvla id", fRecord=setAhvlaId, fExport=ahvlaId},
+  initField {fColumn=33, fTitle="first egg passage", fRecord=setFirsteggPassage, fExport=firstEggPassage, fValidator=validatorRegexToUpper "^(0|1)$" "expected first egg passage: 0, 1"},
+  initField {fColumn=34, fTitle="second egg passage", fRecord=setSecondeggPassage, fExport=secondEggPassage, fValidator=validatorRegexToUpper "^(0|1)$" "expected second egg passage: 0, 1"},
+  initField {fColumn=35, fTitle="passage isolation", fRecord=setPassageIsolation, fExport=passageIsolation, fValidator=validatorRegexToUpper "^(E1|E2|NOT *PERFORMED|NEGATIVE)$" "expected passage isolation: E1, E2, not performed"},
+  initField {fColumn=36, fTitle="virus pathotype", fRecord=setVirusPathotype, fExport=virusPathotype, fValidator=validatorRegexToUpper "^(LPAI|HPAI|NOT *IDENTIFIABLE)$" "expected virus pathotype: LPAI, HPAI, notidentifiable"},
+  initField {fColumn=37, fTitle="haemagglutinin subtype", fRecord=setHaemagglutininSubtype, fExport=haemagglutininSubtype, fValidator=validatorRegexToUpper "^((H[1-9]|H1[0-6])(/(H[1-9]|H1[0-6]))*|MIXED|H +NOT +DETERMINED)$" "expected haemagglutinin subtype: H1-H16, mixed, H not determined"},
+  initField {fColumn=38, fTitle="neuraminidase subtype", fRecord=setNeuraminidaseSubtype, fExport=neuraminidaseSubtype, fValidator=validatorRegexToUpper "^(N[1-9](/N[1-9])*|MIXED|N +NOT +DETERMINED)$" "expected neuraminidase subtype: N1-N9, mixed, N not determined"},
+  initField {fColumn=39, fTitle="serology sample id", fRecord=setSerologySampleId, fExport=serologySampleId, fValidator=validatorSampleId},
+  initField {fColumn=40, fTitle="serology testing date", fRecord=setSerologyTestingDate, fExport=serologyTestingDate, fValidator=validatorDate},
+  initField {fColumn=41, fTitle="serology status", fRecord=setSerologyStatus, fExport=serologyStatus, fValidator=validatorRegex "^(\\+|-|\\*)$" "expected serology status: +, -, *"},
+  initField {fColumn=42, fTitle="*uuid*", fRecord=setUuid, fExport=uuid, fValidator=validatorUuid, fIgnoreInMerge=True}
+  ]
+
+fields_v2 :: [Field]
+fields_v2 = [
+  initField {fColumn= 0, fTitle="sample id", fRecord=setSampleId, fExport=sampleId, fExportCeirs=Just sampleIdCeirs, fValidator=validatorSampleId, fCanBeEmpty=False},
+  initField {fColumn= 1, fTitle="collection day", fRecord=setCollectionDatePart EDay, fExport=dateDay . collectionDate, fValidator=validatorDay, fCanBeEmpty=False},
+  initField {fColumn= 2, fTitle="collection month", fRecord=setCollectionDatePart EMonth, fExport=dateMonth . collectionDate, fValidator=validatorMonth, fCanBeEmpty=False},
+  initField {fColumn= 3, fTitle="collection year", fRecord=setCollectionDatePart EYear, fExport=dateYear . collectionDate, fValidator=validatorYear, fCanBeEmpty=False},
+  initField {fColumn= 4, fTitle="species", fRecord=setSpecies, fExport=species},
+  initField {fColumn= 5, fTitle="age", fRecord=setAge, fExport=age, fValidator=validatorRegexToUpper "^[HAU]$" "expected Age: H, A, U", fCanBeEmpty=False},
+  initField {fColumn= 6, fTitle="sex", fRecord=setSex, fExport=sex, fValidator=validatorRegexToUpper "^[MFU]$" "expected Sex: M, F, U", fCanBeEmpty=False},
+  initField {fColumn= 7, fTitle="ring #", fRecord=setRingNumber, fExport=ringNumber},
+  initField {fColumn= 8, fTitle="host identifier", fRecord=setHostIdentifier, fExport=hostIdentifier, fValidator=validatorSampleId},
+  initField {fColumn= 9, fTitle="host species", fRecord=setHostSpecies, fExport=hostSpecies, fValidator=validatorHostSpecies}, -- 33k variants, column E in database/directories/Clements-Checklists-*.xlsx (http://www.birds.cornell.edu/clementschecklist/download/)
+  initField {fColumn=10, fTitle="host common name", fRecord=setHostcommonName, fExport=hostCommonName, fValidator=validatorHostCommonName}, -- column F from the above sheet
+  initField {fColumn=11, fTitle="health", fRecord=setHealth, fExport=health, fValidator=validatorRegexToUpper "^[HSDU]$" "expected Health: H(ealthy), S(ick), D(ead), U(undetermined)"},
+  initField {fColumn=12, fTitle="capture method/capture status", fRecord=setCapturemethodStatus, fExport=captureMethodStatus, fValidator=validatorCaptureMethod},
+  initField {fColumn=13, fTitle="behavior", fRecord=setBehavior, fExport=behavior, fValidator=validatorRegexToUpper "^(W|D|CW|U)$" "expected Behavior: W(ild), D(omestic), CW (captive-wild), U(known)"},
+  initField {fColumn=14, fTitle="location", fRecord=setLocation, fExport=location, fCanBeEmpty=False},
+  initField {fColumn=15, fTitle="province", fRecord=setProvince, fExport=province}, -- fRecord=, fValidator=validatorInvalid},
+  initField {fColumn=16, fTitle="country", fRecord=setCountry, fExport=country},
+  initField {fColumn=17, fTitle="latitude", fRecord=setLatitude, fExport=latitude, fValidator=validatorFloat (-90.0) 90.0},
+  initField {fColumn=18, fTitle="longitude", fRecord=setLongitude, fExport=longitude, fValidator=validatorFloat (-180.0) 180.0},
+  initField {fColumn=19, fTitle="sample material", fRecord=setSampleMaterial, fExport=sampleMaterial, fValidator=validatorSampleMaterial},
+  initField {fColumn=20, fTitle="test for influenza virus", fRecord=setTestforinfluenzaVirus, fExport=testForInfluenzaVirus}, -- fValidator=validatorTestFlu},
+  initField {fColumn=21, fTitle="day of testing", fRecord=setDateOfTestingPart EDay, fExport=dateDay . dateOfTesting, fValidator=validatorDay},
+  initField {fColumn=22, fTitle="month of testing", fRecord=setDateOfTestingPart EMonth, fExport=dateMonth . dateOfTesting, fValidator=validatorMonth},
+  initField {fColumn=23, fTitle="year of testing", fRecord=setDateOfTestingPart EYear, fExport=dateYear . dateOfTesting, fValidator=validatorYear},
+  initField {fColumn=24, fTitle="pool id", fRecord=setPoolId, fExport=poolId, fValidator=validatorNumber},
+  initField {fColumn=25, fTitle="influenza test result", fRecord=setInfluenzatestResult, fExport=influenzaTestResult, fValidator=validatorRegexToUpper "^(P|N)$" "expected influenza test result: P, N"},
+  initField {fColumn=26, fTitle="ma ct value", fRecord=setMactValue, fExport=maCtValue, fValidator=validatorCtValue},
+  initField {fColumn=27, fTitle="h5 status", fRecord=setH5Status, fExport=h5Status, fValidator=validatorRegexToUpper "^(P|N)$" "expected H5 status: P, N"},
+  initField {fColumn=28, fTitle="h5 ct value", fRecord=setH5ctValue, fExport=h5CtValue, fValidator=validatorCtValue},
+  initField {fColumn=29, fTitle="h5 pathotype", fRecord=setH5Pathotype, fExport=h5Pathotype, fValidator=validatorRegexToUpper "^(LPAI|HPAI)$" "expected H5 pathotype: LPAI, HPAI"},
+  initField {fColumn=30, fTitle="h7 status", fRecord=setH7Status, fExport=h7Status, fValidator=validatorRegexToUpper "^(P|N)$" "expected H7 status: P, N"},
+  initField {fColumn=31, fTitle="h7 ct value", fRecord=setH7ctValue, fExport=h7CtValue, fValidator=validatorCtValue},
+  initField {fColumn=32, fTitle="h7 pathotype", fRecord=setH7Pathotype, fExport=h7Pathotype, fValidator=validatorRegexToUpper "^(LPAI|HPAI)$" "expected H7 pathotype: LPAI, HPAI"},
+  initField {fColumn=33, fTitle="h9 status", fRecord=setH9Status, fExport=h9Status, fValidator=validatorRegexToUpper "^(P|N)$" "expected H9 status: P, N"},
+  initField {fColumn=34, fTitle="h9 ct value", fRecord=setH9ctValue, fExport=h9CtValue, fValidator=validatorCtValue},
+  initField {fColumn=35, fTitle="emc id", fRecord=setEmcId, fExport=emcId},
+  initField {fColumn=36, fTitle="ahvla id", fRecord=setAhvlaId, fExport=ahvlaId},
+  initField {fColumn=37, fTitle="first egg passage", fRecord=setFirsteggPassage, fExport=firstEggPassage, fValidator=validatorRegexToUpper "^(0|1)$" "expected first egg passage: 0, 1"},
+  initField {fColumn=38, fTitle="second egg passage", fRecord=setSecondeggPassage, fExport=secondEggPassage, fValidator=validatorRegexToUpper "^(0|1)$" "expected second egg passage: 0, 1"},
+  initField {fColumn=39, fTitle="passage isolation", fRecord=setPassageIsolation, fExport=passageIsolation, fValidator=validatorRegexToUpper "^(E1|E2|NOT *PERFORMED|NEGATIVE)$" "expected passage isolation: E1, E2, not performed"},
+  initField {fColumn=40, fTitle="virus pathotype", fRecord=setVirusPathotype, fExport=virusPathotype, fValidator=validatorRegexToUpper "^(LPAI|HPAI|NOT *IDENTIFIABLE)$" "expected virus pathotype: LPAI, HPAI, notidentifiable"},
+  initField {fColumn=41, fTitle="haemagglutinin subtype", fRecord=setHaemagglutininSubtype, fExport=haemagglutininSubtype, fValidator=validatorRegexToUpper "^((H[1-9]|H1[0-6])(/(H[1-9]|H1[0-6]))*|MIXED|H +NOT +DETERMINED)$" "expected haemagglutinin subtype: H1-H16, mixed, H not determined"},
+  initField {fColumn=42, fTitle="neuraminidase subtype", fRecord=setNeuraminidaseSubtype, fExport=neuraminidaseSubtype, fValidator=validatorRegexToUpper "^(N[1-9](/N[1-9])*|MIXED|N +NOT +DETERMINED)$" "expected neuraminidase subtype: N1-N9, mixed, N not determined"},
+  initField {fColumn=43, fTitle="serology sample id", fRecord=setSerologySampleId, fExport=serologySampleId, fValidator=validatorSampleId},
+  initField {fColumn=44, fTitle="serology testing day", fRecord=setSerologyTestingDatePart EDay, fExport=dateDay . serologyTestingDate, fValidator=validatorDay},
+  initField {fColumn=45, fTitle="serology testing month", fRecord=setSerologyTestingDatePart EMonth, fExport=dateMonth . serologyTestingDate, fValidator=validatorMonth},
+  initField {fColumn=46, fTitle="serology testing year", fRecord=setSerologyTestingDatePart EYear, fExport=dateYear . serologyTestingDate, fValidator=validatorYear},
+  initField {fColumn=47, fTitle="serology status", fRecord=setSerologyStatus, fExport=serologyStatus, fValidator=validatorRegex "^(\\+|-|\\*)$" "expected serology status: +, -, *"},
+  initField {fColumn=48, fTitle="*uuid*", fRecord=setUuid, fExport=uuid, fValidator=validatorUuid, fIgnoreInMerge=True}
+  ]
+
+----------------------------------------------------------------------
+
+fieldErrorPrefixT :: Int -> Int -> T.Text -> T.Text
+fieldErrorPrefixT rowNo colNo message = T.intercalate "" ["Error in cell ", ssheetRowColToText rowNo colNo, ": ", message]
+
+fieldErrorPrefixTT :: Int -> Int -> [T.Text] -> T.Text
+fieldErrorPrefixTT rowNo colNo messages = T.intercalate "" (["Error in cell ", ssheetRowColToText rowNo colNo, ": "] ++ messages)
+
+fieldErrorPrefixS :: Int -> Int -> String -> T.Text
+fieldErrorPrefixS rowNo colNo message = fieldErrorPrefixT rowNo colNo (T.pack message)
+
+----------------------------------------------------------------------
+
+normalizeFieldTitleText :: T.Text -> T.Text
+normalizeFieldTitleText = T.replace "_" " " . T.toLower
+
+validateFieldTitle :: [Cell] -> Field -> Maybe T.Text
+validateFieldTitle cells field =
+  let colNo = fColumn field
+      expected = fTitle field
+      cell = case drop colNo cells of
+        [] -> CellEmpty
+        cc -> head cc
+  in
+   case (expected, cell) of
+    ("*uuid*", _) -> case validatorUuid Dirs.emptyDirectories cell of
+                      Right _ -> Nothing
+                      Left [t] -> Just $ fieldErrorPrefixS 1 colNo $ T.unpack t
+                      _ -> Just $ fieldErrorPrefixS 1 colNo "original database id within DTRA system expected"
+    (_, CellString text) | normalizeFieldTitleText text == expected -> Nothing
+    _ -> Just $ fieldErrorPrefixS 1 colNo $ "invalid column label: \"" ++ cellAsString cell ++ "\" expected: \"" ++ T.unpack expected ++ "\""
+
+----------------------------------------------------------------------
+
+-- | Source file may contain columns in arbitrary order.
+-- Figure out fColumn for each field by its title.
+--
+-- Returns either errors (e.g. fields not found) or list of Field with
+-- fColumn set correctly. If field not found, fColumn is set to
+-- -1. If field not found and fCanBeEmpty=False for it, error is
+-- raised. Redundant fields found in [Cell] ignored.
+findFields :: [Cell] -> [Field] -> Either [T.Text] [Field]
+findFields cells {- sourceFields -} =
+  foldr (sequenceField . findField) (Right []) {- sourceFields -}
+  where
+    findField field =
+      case L.find (matchCell (fTitle field)) (zip [0..] normalizedCells) of
+       Just (index, _)                      -> Right $ field { fColumn = index }
+       Nothing | (fTitle field) == "*uuid*" -> Right $ field
+       Nothing                              -> if fCanBeEmpty field
+                                               then Right $ field { fColumn = -1 }
+                                               else Left $ T.concat ["Mandatory column \"", fTitle field, "\" not found"]
+    normalizedCells = map normalizeCell cells
+    normalizeCell (CellString t) = normalizeFieldTitleText t
+    normalizeCell _ = "*not string*"
+    matchCell lookFor (_, t) = lookFor == t
+    sequenceField (Right field) (Right accum) = Right (field : accum)
+    sequenceField (Left err) (Right _) = Left [err]
+    sequenceField (Right _) (Left accum) = Left accum
+    sequenceField (Left err) (Left accum) = Left (err : accum)
+
+----------------------------------------------------------------------
+
+normalizeField :: Dirs.Directories -> Int -> [Cell] -> Field -> ValidatorResult
+normalizeField directories rowNo cells field =
+  let colNo = fColumn field
+      validate = fValidator field directories
+      cell = case drop colNo cells of -- Note empty cells at the tail of cells truncated
+        [] -> CellEmpty
+        cc -> head cc
+  in
+   -- trace ("normalizeField " ++ ssheetRowColToString rowNo colNo ++ " " ++ show cell) $
+   if colNo >= 0 && cell /= CellEmpty -- negative colNo means field (column) is absent in the source file
+   then
+     -- trace ("normalizeField " ++ ssheetRowColToString rowNo colNo ++ " " ++ show cell) $
+     case validate cell of
+      Left [msg] -> Left [fieldErrorPrefixTT rowNo colNo ["\"", cellAsText cell, "\": ", msg]]
+      result -> result
+   else if fCanBeEmpty field
+        then return ""
+        else Left [fieldErrorPrefixT rowNo colNo "cannot be empty"]
+
+----------------------------------------------------------------------
+{- Field Validators -}
+----------------------------------------------------------------------
+
+validatorDefault :: Validator
+validatorDefault _ cell = Right $ cellAsText cell
+-- validatorDefault cell = Left [cellAsText cell]
+
+validatorInvalid :: Validator
+validatorInvalid _ cell = Left [cellAsText cell]
+
+----------------------------------------------------------------------
+
+validatorRegex :: T.Text -> T.Text -> Validator
+validatorRegex regex_s err =
+  let regex = Rex.makeRegexOpts (Rex.defaultCompOpt {Rex.caseSensitive=False}) (Rex.defaultExecOpt {Rex.captureGroups=False}) regex_s
+      validator _ cell =
+        let text = cellAsText cell
+        in
+         if Rex.match regex text
+         then Right text
+         else Left [err]
+  in
+   validator
+
+----------------------------------------------------------------------
+
+validatorRegexToUpper :: T.Text -> T.Text -> Validator
+validatorRegexToUpper regex_s err =
+  let regex = Rex.makeRegexOpts (Rex.defaultCompOpt {Rex.caseSensitive=True}) (Rex.defaultExecOpt {Rex.captureGroups=False}) regex_s
+      validator _ cell =
+        let textRaw = cellAsText cell
+            text = T.toUpper textRaw
+        in
+         if Rex.match regex text
+         then Right text
+         else Left [err]
+  in
+   validator
+
+----------------------------------------------------------------------
+
+validatorDate :: Validator
+validatorDate _ cell =
+  case parseDateDayFirst $ cellAsText cell of
+   Left err -> Left [err]
+   Right day -> Right (showDay day)
+
+validatorDay :: Validator
+validatorDay _ cell =
+  cellAsInt cell >>= validate
+  where
+    validate v = if v >= 1 && v <= 31 then Right (showInt2Digits v) else Left ["Invalid day"]
+
+validatorMonth :: Validator
+validatorMonth _ cell =
+  cellAsInt cell >>= validate
+  where
+    validate v = if v >= 1 && v <= 12 then Right (showInt2Digits v) else Left ["Invalid month"]
+
+validatorYear :: Validator
+validatorYear _ cell =
+  cellAsInt cell >>= validate
+  where
+    validate v = if v >= 2000 then Right (T.pack $ show v) else Left ["Invalid year"]
+
+cellAsInt :: Cell -> Either [T.Text] Int
+cellAsInt cell =
+  case (readMaybe . cellAsString) cell of
+      Just i -> Right i
+      Nothing -> Left ["Unrecognized day"]
+
+-- ----------------------------------------------------------------------
+
+dateDay :: T.Text -> T.Text
+dateDay = T.take 2
+
+dateMonth :: T.Text -> T.Text
+dateMonth = T.take 2 . T.drop 3
+
+dateYear :: T.Text -> T.Text
+dateYear = T.drop 6
+
+-- ----------------------------------------------------------------------
+
+showDay :: Day -> T.Text
+showDay = T.pack . formatTime defaultTimeLocale "%d.%m.%Y"
+
+showInt2Digits :: Int -> T.Text
+showInt2Digits int = T.pack $ if int < 10 then "0" ++ show int else show int
+
+-- showDayDay :: Day -> T.Text
+-- showDayDay = T.pack . formatTime defaultTimeLocale "%d"
+
+-- showDayMonth :: Day -> T.Text
+-- showDayMonth = T.pack . formatTime defaultTimeLocale "%m"
+
+-- showDayYear :: Day -> T.Text
+-- showDayYear = T.pack . formatTime defaultTimeLocale "%Y"
+
+----------------------------------------------------------------------
+
+validatorSampleId :: Validator
+validatorSampleId = validatorRegexToUpper "^(217|DT)-[0-9]+$" "expected: 217-xxxxx, DT-xxxxx"
+
+----------------------------------------------------------------------
+
+-- A=Active surveillance (e.g. trap); sampling not initiated by an outbreak
+-- K=Opportunistically sampled (e.g., hunter-killed or killed in order to take sample)
+-- O=Sample collected in response to outbreak (sick or dying birds)
+-- M=Market Sample
+-- P=Sample obtained from a pet
+-- Z=Sample obtained from a zoo
+-- F=Farm Sample
+-- OT= Other; plus free text (e.g. OT-restaurant)
+-- U=Undetermined
+
+validatorCaptureMethod :: Validator
+validatorCaptureMethod = validatorRegexToUpper "^(A|K|O|M|P|Z|F|U|OT.*)$" "expected: A, K, O, M, P, Z, F, OT-<text>, U"
+
+----------------------------------------------------------------------
+
+validatorFloat :: Float -> Float -> Validator
+validatorFloat minValue maxValue =
+  let validator :: Validator
+      validator _ cell =
+        let text = cellAsText cell
+            -- isFloat :: Bool
+            -- isFloat = text Rex.=~ ("^[-+]?[0-9]+(\\.[0-9]*)?$" :: T.Text)
+            value :: Maybe Float
+            value = readMaybe $ T.unpack text
+        in
+         case value of
+          Just f | f >= minValue && f <= maxValue -> Right text
+          _ -> Left [T.pack ("expected: float value in range " ++ show minValue ++ ".." ++ show maxValue)]
+  in
+   validator
+
+----------------------------------------------------------------------
+
+-- TS = Tracheal swab
+-- OP = Oral-pharyngeal
+-- C = Cloacal
+-- F = Feces
+-- COP = Cloacal and oral-pharyngeal samples, when combined into one sample
+-- B= Blood
+-- SR = Serum
+-- TT = Tissue from trachea
+-- CF = Cloacal and fecal samples, when combined into one sample
+-- TB = Tissue from brain
+-- TO = Other tissue
+-- L = Lungs
+-- S = Soil
+-- W = Water
+-- O = Other; plus free typed out text (e.g. O - feather)
+-- U = Unknown
+
+validatorSampleMaterial :: Validator
+validatorSampleMaterial = validatorRegexToUpper "^(TS|OP|C|F|COP|B|SR|TT|CF|TB|TO|L|S|W|O[- ].+|X.*)$" "expected: TS, OP, C, F, COP, B, SR, TT, CF, TB, TO, L, S, W, O -<text>, X-<text>"
+
+----------------------------------------------------------------------
+
+validatorTestFlu :: Validator
+-- validatorTestFlu = validatorRegexToUpper "^RRT-PCR +(MA|H5|H7)$" "expected: RRT-PCR MA, RRT-PCR H5, RRT-PCR H7"
+validatorTestFlu = validatorRegexToUpper "^RRT-PCR +MA( *,? *RRT-PCR +H5( *,? *RRT-PCR +H7)?)?$" "expected: RRT-PCR MA, RRT-PCR H5, RRT-PCR H7"
+
+----------------------------------------------------------------------
+
+validatorNumber :: Validator
+validatorNumber = validatorRegex "^[0-9\\.]+$" "expected: numeric value"
+
+----------------------------------------------------------------------
+
+validatorCtValue :: Validator
+validatorCtValue = validatorRegex "^[<>]?[0-9]+(\\.[0-9][0-9]?)?$" "expected: valid CT Value"
+
+----------------------------------------------------------------------
+
+validatorUuid :: Validator
+-- validatorUuid = validatorRegex "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$" "expected: orinating database id within DTRA system"
+validatorUuid = validatorRegex "^.+$" "expected: orinating database id within DTRA system"
+
+----------------------------------------------------------------------
+
+validatorHostSpecies :: Validator
+-- validatorHostSpecies = validatorDirectories "you may omit Host species and fill Host common name, the former will be auto-filled by the system" Dirs.birdListFindScientific'
+validatorHostSpecies _ cell = Right (cellAsText cell) -- validated by Import.processDTRA.updateHostSpeciesCommonName
+
+validatorHostCommonName :: Validator
+-- validatorHostCommonName = validatorDirectories "you may fill Host species and omit Host common name, the latter will be auto-filled by the system" Dirs.birdListFindEnglish'
+validatorHostCommonName _ cell = Right (cellAsText cell) -- validated by Import.processDTRA.updateHostSpeciesCommonName
+
+validatorDirectories :: T.Text -> (Dirs.Directories -> T.Text -> Maybe a) -> Validator
+validatorDirectories err find directories cell =
+  let text = cellAsText cell
+  in
+   maybe (Left [err]) (\_ -> Right text) (find directories text)
+
+----------------------------------------------------------------------
+
+fieldByColumnNo :: T.Text -> Int -> Field
+fieldByColumnNo version columnNo =
+  fromMaybe (error ("No field for column " ++ show columnNo)) (L.find fNo (fields version))
+  where
+    fNo field = fColumn field == columnNo
+
+----------------------------------------------------------------------
+
+fRecordByColumnNo :: T.Text -> Int -> RecordFieldSetter
+fRecordByColumnNo version = fRecord . fieldByColumnNo version
+
+----------------------------------------------------------------------
+
+makeRecord :: T.Text -> [T.Text] -> Record
+-- makeRecord fieldList | trace ("makeRecord: " ++ show (head fieldList)) False = undefined
+makeRecord version fieldList =
+  foldl updateRecord emptyRecord (zip fieldList [0..])
+  where
+    updateRecord record (value, columnNo) = fRecordByColumnNo version columnNo record value
+
+----------------------------------------------------------------------
+
+recordToList :: T.Text -> Record -> [T.Text]
+-- recordToList version record | trace ("recordToList " ++ show record) False = undefined
+recordToList version record =
+  let columnExport = map (\f -> (fColumn f, fExport f)) (fieldsToExportDTRA version)
+      numColumns = fst (L.maximumBy (L.comparing fst) columnExport) + 1
+      initResult = Seq.replicate numColumns ("" :: T.Text)
+      updateResult result (colNo, export) = Seq.update colNo (export record) result
+  in
+   Seq.toList $ foldl updateResult initResult columnExport
+
+----------------------------------------------------------------------
+
+-- recordToListCeirs :: Record -> [T.Text]
+-- recordToListCeirs record =
+--   let columnExport =
+--         map columnExporter fieldsToExportCeirs
+--         where
+--           columnExporter f =
+--             case fExportCeirs f of
+--              Just export -> (fColumn f, export)
+--              Nothing -> (fColumn f, fExport f)
+--       numColumns = fst (L.maximumBy (L.comparing fst) columnExport) + 1
+--       initResult = Seq.replicate numColumns ("" :: T.Text)
+--       updateResult result (colNo, export) = Seq.update colNo (export record) result
+--   in
+--    Seq.toList $ foldl updateResult initResult columnExport
+
+----------------------------------------------------------------------
+
+titlesToList :: T.Text -> T.Text -> [T.Text]
+titlesToList version uuidOfSheet =
+  let columnTitle = map (\f -> (fColumn f, fTitle f)) (fieldsToExportDTRA version)
+      numColumns = fst (L.maximumBy (L.comparing fst) columnTitle) + 1
+      initResult = Seq.replicate numColumns ("" :: T.Text)
+      updateResult result (colNo, title) = Seq.update colNo (if title == "*uuid*" then uuidOfSheet else title) result
+  in
+   Seq.toList $ foldl updateResult initResult columnTitle
+
+----------------------------------------------------------------------
+
+-- titlesToListCeirs :: [T.Text]
+-- titlesToListCeirs =
+--   let columnTitle = map (\f -> (fColumn f, fTitle f)) fieldsToExportCeirs
+--       numColumns = fst (L.maximumBy (L.comparing fst) columnTitle) + 1
+--       initResult = Seq.replicate numColumns ("" :: T.Text)
+--       updateResult result (colNo, title) = Seq.update colNo title result
+--   in
+--    Seq.toList $ foldl updateResult initResult columnTitle
+
+----------------------------------------------------------------------
+
+fieldsToExport :: T.Text -> (Field -> Bool) -> [Field]
+fieldsToExport version filterBy = filter filterBy (fields version)
+
+fieldsToExportDTRA :: T.Text -> [Field]
+-- fieldsToExportDTRA version | trace ("fieldsToExportDTRA: " ++ show (fieldsToExport version (const True))) False = undefined
+fieldsToExportDTRA version = fieldsToExport version (const True)
+
+fieldsToExportCeirs :: [Field]
+fieldsToExportCeirs = fieldsToExport "1" (\f -> fTitle f /= "*uuid*")
+
+----------------------------------------------------------------------
