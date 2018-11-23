@@ -1,4 +1,7 @@
+#include "string.hh"
 #include "field.hh"
+
+// ----------------------------------------------------------------------
 
 std::vector<std::string> dtra::v2::field::Text::validate() const
 {
@@ -21,6 +24,42 @@ std::vector<std::string> dtra::v2::field::Uppercase::validate() const
     return errors;
 
 } // dtra::v2::field::Uppercase::validate
+
+// ----------------------------------------------------------------------
+
+dtra::v2::field::Float& dtra::v2::field::Float::operator=(const std::string& source)
+{
+    const auto stripped = string::strip(source);
+    if (!stripped.empty()) {
+        size_t end;
+        try {
+            value_ = std::stod(stripped, &end);
+            if (end != stripped.size())
+                errors_.push_back("number expected");
+        }
+        catch (std::exception& /*err*/) {
+            errors_.push_back("number expected");
+        }
+    }
+    return *this;
+
+} // dtra::v2::field::Float::operator=
+
+// ----------------------------------------------------------------------
+
+std::vector<std::string> dtra::v2::field::Float::validate() const
+{
+    if (errors_.empty()) {
+        if (min_ && value_ && value_ < min_)
+            errors_.push_back("number out of range");
+        else if (max_ && value_ && value_ > max_)
+            errors_.push_back("number out of range");
+    }
+    return errors_;
+
+} // dtra::v2::field::Float::validate
+
+// ----------------------------------------------------------------------
 
 
 // ----------------------------------------------------------------------

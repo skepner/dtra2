@@ -52,6 +52,8 @@ namespace dtra
                 const can_be_empty can_be_empty_ = can_be_empty::yes;
             };
 
+              // ----------------------------------------------------------------------
+
             class Uppercase : public Text
             {
               public:
@@ -68,6 +70,24 @@ namespace dtra
              private:
                 const std::optional<std::regex> re_validator_;
                 const std::string error_message_;
+            };
+
+              // ----------------------------------------------------------------------
+
+            class Float
+            {
+             public:
+                Float() = default;
+                Float(double min, double max) : min_{min}, max_{max} {}
+                Float& operator=(const std::string& source);
+
+                std::vector<std::string> validate() const;
+
+             private:
+                std::optional<double> value_;
+                std::optional<double> min_, max_;
+                mutable std::vector<std::string> errors_;
+
             };
 
         } // namespace field

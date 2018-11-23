@@ -92,8 +92,8 @@ namespace dtra
             field::Text      location_{field::can_be_empty::no};
             field::Text      province_;
             field::Text      country_;
-            field::Text      latitude_;
-            field::Text      longitude_;
+            field::Float     latitude_{-90, 90};
+            field::Float     longitude_{-180, 180};
             field::Text      sample_material_;
             field::Text      test_for_influenza_virus_;
             field::Date      date_of_testing_;

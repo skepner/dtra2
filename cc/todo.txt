@@ -8,8 +8,6 @@ sampleIdCeirs record =
 
 ----------------------------------------------------------------------
 
-  initField {fColumn=17, fTitle="latitude", fRecord=setLatitude, fExport=latitude, fValidator=validatorFloat (-90.0) 90.0},
-  initField {fColumn=18, fTitle="longitude", fRecord=setLongitude, fExport=longitude, fValidator=validatorFloat (-180.0) 180.0},
   initField {fColumn=19, fTitle="sample material", fRecord=setSampleMaterial, fExport=sampleMaterial, fValidator=validatorSampleMaterial},
   initField {fColumn=20, fTitle="test for influenza virus", fRecord=setTestforinfluenzaVirus, fExport=testForInfluenzaVirus}, -- fValidator=validatorTestFlu},
   initField {fColumn=21, fTitle="day of testing", fRecord=setDateOfTestingPart EDay, fExport=dateDay . dateOfTesting, fValidator=validatorDay},
@@ -223,24 +221,6 @@ showInt2Digits int = T.pack $ if int < 10 then "0" ++ show int else show int
 
 -- showDayYear :: Day -> T.Text
 -- showDayYear = T.pack . formatTime defaultTimeLocale "%Y"
-
-----------------------------------------------------------------------
-
-validatorFloat :: Float -> Float -> Validator
-validatorFloat minValue maxValue =
-  let validator :: Validator
-      validator _ cell =
-        let text = cellAsText cell
-            -- isFloat :: Bool
-            -- isFloat = text Rex.=~ ("^[-+]?[0-9]+(\\.[0-9]*)?$" :: T.Text)
-            value :: Maybe Float
-            value = readMaybe $ T.unpack text
-        in
-         case value of
-          Just f | f >= minValue && f <= maxValue -> Right text
-          _ -> Left [T.pack ("expected: float value in range " ++ show minValue ++ ".." ++ show maxValue)]
-  in
-   validator
 
 ----------------------------------------------------------------------
 
