@@ -6,6 +6,7 @@ TARGETS = \
 
 COMMON_SOURCES = \
     sheet.cc record.cc \
+    field.cc date.cc \
     rjson.cc read-file.cc
 
 STD = c++17

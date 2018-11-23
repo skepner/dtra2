@@ -1,5 +1,10 @@
 #pragma once
 
+#include <string>
+#include <vector>
+
+// ----------------------------------------------------------------------
+
 namespace dtra
 {
     inline namespace v2
@@ -28,7 +33,7 @@ namespace dtra
                     return *this;
                 }
 
-                std::vector<std::string> validate() const { return {}; }
+                std::vector<std::string> validate() const;
 
               private:
                 const can_be_empty can_be_empty_ = can_be_empty::yes;
