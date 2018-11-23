@@ -110,7 +110,7 @@ void dtra::v2::Record::validate_hostspecies_commonname(const Directory& birds, s
                     new_host_common_name = birds.find("scientificToEnglish", string::lower(host_species_));
                     if (new_host_common_name.empty())
                         throw std::runtime_error(string::concat("host species \"", host_species_, "\" not found in the database, use \"", new_host_species, '"'));
-                    if (host_species_ != new_host_species)
+                    if (string::lower(host_species_) != string::lower(new_host_species))
                         throw std::runtime_error(string::concat("common name \"", host_common_name_, "\" and host species \"", host_species_, "\" mismatch"));
                 }
             }
