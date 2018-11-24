@@ -102,24 +102,21 @@ void dtra::v2::Record::validate_hostspecies_commonname(const Directory& birds, s
             if (!host_common_name_.empty()) {
                 new_host_species = birds.find("englishToScientific", string::lower(host_common_name_));
                 if (new_host_species.empty())
-                    throw std::runtime_error(string::concat("common name \"", host_common_name_, "\" not found in the database, species is empty"));
-                if (host_species_.empty()) {
-                    host_species_ = new_host_species;
-                }
-                else {
-                    new_host_common_name = birds.find("scientificToEnglish", string::lower(host_species_));
-                    if (new_host_common_name.empty())
-                        throw std::runtime_error(string::concat("host species \"", host_species_, "\" not found in the database, use \"", new_host_species, '"'));
-                    if (string::lower(host_species_) != string::lower(new_host_species))
-                        throw std::runtime_error(string::concat("common name \"", host_common_name_, "\" and host species \"", host_species_, "\" mismatch"));
-                }
+                    throw std::runtime_error(string::concat("common name \"", host_common_name_, "\" not found in the database"));
             }
-            else if (!host_species_.empty()) {
+            if (!host_species_.empty()) {
                 new_host_common_name = birds.find("scientificToEnglish", string::lower(host_species_));
                 if (new_host_common_name.empty())
-                    throw std::runtime_error(string::concat("host species \"", host_species_, "\" not found in the database, common name is empty"));
-                host_common_name_ = new_host_common_name;
+                    throw std::runtime_error(string::concat("host species \"", host_species_, "\" not found in the database"));
             }
+            if (host_common_name_.empty())
+                host_common_name_ = new_host_common_name;
+            else if (host_species_.empty())
+                host_species_ = new_host_common_name;
+            else if (host_common_name_ != new_host_common_name && host_species_ != new_host_species)
+                throw std::runtime_error(string::concat("common name \"", host_common_name_, "\" and host species \"", host_species_, "\" mismatch"));
+            else
+                ;               // match
         }
         else {
             throw std::runtime_error("Neither host species nor host common name provided, please put one of them, the system will fill the other");
