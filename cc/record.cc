@@ -1,4 +1,5 @@
 #include "xlnt.hh"
+#include "float.hh"
 #include "record.hh"
 #include "directories.hh"
 
@@ -146,7 +147,35 @@ void dtra::v2::Record::check_dates(std::vector<std::string>& reports)
 
 void dtra::v2::Record::update_locations(const Directory& locations, std::vector<std::string>& reports)
 {
-      //std::cerr << "WARNING: update_locations not implemented\n";
+    try {
+        const auto& loc_data = locations.find(string::lower(location_));
+        if (loc_data.is_null())
+            throw std::runtime_error(string::concat("location not found: ", location_));
+
+        const auto check = [this,&loc_data](const char* field_name, field::Text& field) {
+            const std::string_view expected = loc_data[field_name];
+            if (field.empty())
+                field = expected;
+            else if (field != expected)
+                throw std::runtime_error(string::concat("invalid ", field, " (", field, ") for ", location_, " (expected: ", expected, "), please leave Province, Country, Latitude, Longitude fields empty to allow system to fill them with the correct content"));
+        };
+
+        const auto check_float = [this,&loc_data](const char* field_name, field::Float& field) {
+            const double expected = loc_data[field_name];
+            if (field.empty())
+                field = expected;
+            else if (!float_equal(static_cast<double>(field), expected))
+                throw std::runtime_error(string::concat("invalid ", field, " (", field, ") for ", location_, " (expected: ", expected, "), please leave Province, Country, Latitude, Longitude fields empty to allow system to fill them with the correct content"));
+        };
+
+        check("province", province_);
+        check("country", country_);
+        check_float("latitude", latitude_);
+        check_float("longitude", longitude_);
+    }
+    catch (std::exception& err) {
+        reports.push_back(err.what());
+    }
 
 } // dtra::v2::Record::update_locations
 

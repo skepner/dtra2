@@ -27,6 +27,15 @@ std::vector<std::string> dtra::v2::field::Uppercase::validate() const
 
 // ----------------------------------------------------------------------
 
+dtra::v2::field::Float& dtra::v2::field::Float::operator=(double source)
+{
+    value_ = source;
+    return *this;
+
+} // dtra::v2::field::Float::operator=
+
+// ----------------------------------------------------------------------
+
 dtra::v2::field::Float& dtra::v2::field::Float::operator=(const std::string& source)
 {
     const auto stripped = string::strip(source);

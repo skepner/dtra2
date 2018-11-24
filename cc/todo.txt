@@ -137,18 +137,3 @@ validatorDirectories err find directories cell =
             checkFieldFloat "latitude" R.latitude Dirs.latitude
             checkFieldFloat "longitude" R.longitude Dirs.longitude
             Right record { R.province=Dirs.province locationRec, R.country=Dirs.country locationRec, R.latitude=Dirs.latitude locationRec, R.longitude=Dirs.longitude locationRec }
-
-    -- Nic 2015-02-10: If 'domesticus' in the species field please autofill behavior as D, All other species entries please autofill behavior as W
-    updateBehavior :: R.MapRecords -> R.EitherErrorsRecords
-    updateBehavior =
-      checkErrors checkRecord
-      where
-        checkRecord :: R.Record -> R.EitherErrorsRecord
-        checkRecord record =
-          let species = U.normalizeText $ R.hostSpecies record
-              domesticus = "domesticus" `T.isInfixOf` species
-              behavior_orig = R.behavior record
-              behavior = if not (T.null behavior_orig) then behavior_orig else if domesticus then "D" else "W"
-          in
-           Right record { R.behavior = behavior }
-

@@ -24,6 +24,12 @@ namespace dtra
                 Text(const Text&) = default;
                 Text(Text&&) = default;
                 virtual ~Text() = default;
+                Text& operator=(std::string_view source)
+                {
+                    std::string::operator=(source);
+                    fix_on_assign();
+                    return *this;
+                }
                 Text& operator=(const std::string& source)
                 {
                     std::string::operator=(source);
@@ -42,6 +48,13 @@ namespace dtra
                     fix_on_assign();
                     return *this;
                 }
+
+                bool operator==(std::string_view rhs) const { return std::string_view(*this) == rhs; }
+                bool operator!=(std::string_view rhs) const { return !operator==(rhs); }
+                bool operator==(std::string rhs) const { return static_cast<const std::string&>(*this) == rhs; }
+                bool operator!=(std::string rhs) const { return !operator==(rhs); }
+                bool operator==(const char* rhs) const { return std::string_view(*this) == std::string_view(rhs); }
+                bool operator!=(const char* rhs) const { return !operator==(rhs); }
 
                 std::vector<std::string> validate() const;
 
@@ -84,7 +97,10 @@ namespace dtra
                 Float() = default;
                 Float(double min, double max) : min_{min}, max_{max} {}
                 Float& operator=(const std::string& source);
+                Float& operator=(double source);
 
+                bool empty() const { return bool(value_); }
+                operator double() const { return *value_; }
                 std::vector<std::string> validate() const;
 
              private:

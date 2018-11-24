@@ -13,7 +13,7 @@ namespace dtra
          public:
             Directory(std::string filename);
 
-            std::string find(std::string key) const;
+            const rjson::value& find(std::string key) const { return data_[key]; }
             std::string find(const char* subtree, std::string key) const;
 
          private:
