@@ -2,6 +2,7 @@
 
 #include <vector>
 
+#include "xlnt.hh"
 #include "record.hh"
 
 // ----------------------------------------------------------------------
@@ -18,9 +19,12 @@ namespace dtra
             Sheet(const Directory& locations, const Directory& birds, const char* filename) : locations_{locations}, birds_{birds} { read(filename); }
 
             void read(const char* filename);
+            void write(const char* filename) const;
+            void merge(const Sheet& merge_in);
             std::string report() const { return report_; }
 
          private:
+            mutable xlnt::workbook workbook_;
             std::vector<Record> records_;
             std::string report_; // empty, if there are no errors
             const Directory& locations_;

@@ -63,25 +63,6 @@ findFields cells {- sourceFields -} =
 
 ----------------------------------------------------------------------
 
-normalizeField :: Dirs.Directories -> Int -> [Cell] -> Field -> ValidatorResult
-normalizeField directories rowNo cells field =
-  let colNo = fColumn field
-      validate = fValidator field directories
-      cell = case drop colNo cells of -- Note empty cells at the tail of cells truncated
-        [] -> CellEmpty
-        cc -> head cc
-  in
-   -- trace ("normalizeField " ++ ssheetRowColToString rowNo colNo ++ " " ++ show cell) $
-   if colNo >= 0 && cell /= CellEmpty -- negative colNo means field (column) is absent in the source file
-   then
-     -- trace ("normalizeField " ++ ssheetRowColToString rowNo colNo ++ " " ++ show cell) $
-     case validate cell of
-      Left [msg] -> Left [fieldErrorPrefixTT rowNo colNo ["\"", cellAsText cell, "\": ", msg]]
-      result -> result
-   else if fCanBeEmpty field
-        then return ""
-        else Left [fieldErrorPrefixT rowNo colNo "cannot be empty"]
-
 ----------------------------------------------------------------------
 {- Field Validators -}
 ----------------------------------------------------------------------
@@ -97,43 +78,3 @@ cellAsInt cell =
 validatorUuid :: Validator
 -- validatorUuid = validatorRegex "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$" "expected: orinating database id within DTRA system"
 validatorUuid = validatorRegex "^.+$" "expected: orinating database id within DTRA system"
-
-----------------------------------------------------------------------
-
-validatorDirectories :: T.Text -> (Dirs.Directories -> T.Text -> Maybe a) -> Validator
-validatorDirectories err find directories cell =
-  let text = cellAsText cell
-  in
-   maybe (Left [err]) (\_ -> Right text) (find directories text)
-
-----------------------------------------------------------------------
-
-    updateLocations :: R.MapRecords -> R.EitherErrorsRecords
-    updateLocations =
-      checkErrors checkRecord
-      where
-        checkRecord record =
-          let sampleId = R.sampleId record
-              location = R.location record
-              locationRecMaybe = Dirs.locationFind' directories location
-              locationRec = fromJust locationRecMaybe
-              err fieldName got expected = Left [T.concat [sampleId, ": invalid ", fieldName, " for ", location, ": ", got, " (expected: ", expected, ")",
-                                                           ", please leave Province, Country, Latitude, Longitude fields empty to allow system to fill them with the correct content"]]
-              checkField fieldName gotF expectedF = unless
-                                                    (T.null (gotF record) || U.normalizeText (expectedF locationRec) == U.normalizeText (gotF record))
-                                                    (err fieldName (gotF record) (expectedF locationRec))
-              checkFieldFloat fieldName gotF expectedF = unless
-                                                    (T.null (gotF record) || readFloat (expectedF locationRec) == readFloat (gotF record))
-                                                    (err fieldName (gotF record) (expectedF locationRec))
-              readFloat :: T.Text -> Float
-              readFloat source =
-                case (readMaybe . T.unpack . U.normalizeText) source of
-                 Just f -> f
-                 Nothing -> trace ("updateLocations: No float in " ++ T.unpack source) (-1.0)
-          in do
-            when (isNothing locationRecMaybe) (Left [T.concat [sampleId, ": location not found: ", location]])
-            checkField "province" R.province Dirs.province
-            checkField "country" R.country Dirs.country
-            checkFieldFloat "latitude" R.latitude Dirs.latitude
-            checkFieldFloat "longitude" R.longitude Dirs.longitude
-            Right record { R.province=Dirs.province locationRec, R.country=Dirs.country locationRec, R.latitude=Dirs.latitude locationRec, R.longitude=Dirs.longitude locationRec }

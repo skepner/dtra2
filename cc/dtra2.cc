@@ -25,6 +25,9 @@ int main(int argc, char* const argv[])
                 std::cerr << report2 << '\n';
                 throw std::runtime_error{string::concat("errors in reading ", argv[2])};
             }
+            sheet1.merge(sheet2);
+            if (argc > 3)
+                sheet1.write(argv[3]);
         }
         return 0;
     }

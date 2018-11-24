@@ -2,7 +2,6 @@
 #include <regex>
 
 #include "sheet.hh"
-#include "xlnt.hh"
 
 // ----------------------------------------------------------------------
 
@@ -73,9 +72,8 @@ void dtra::v2::Sheet::read(const char* filename)
 {
     report_.clear();
 
-    xlnt::workbook wb;
-    wb.load(filename);
-    const auto ws = wb.active_sheet();
+    workbook_.load(filename);
+    const auto ws = workbook_.active_sheet();
     if (ws.cell(1, 1).value<std::string>() != "DTRA version 2")
         throw std::runtime_error("\"DTRA version 2\" not found in cell A1");
     std::cerr << "DEBUG: rows:" << ws.highest_row() << " columns:" << ws.highest_column().column_string() << '\n';
@@ -112,6 +110,25 @@ void dtra::v2::Sheet::read(const char* filename)
     }
 
 } // dtra::v2::Sheet::read
+
+// ----------------------------------------------------------------------
+
+void dtra::v2::Sheet::write(const char* filename) const
+{
+    auto ws = workbook_.active_sheet();
+      // erase all cells except header (first two rows)
+      // fill in rows
+    std::cout << "Writing " << filename << '\n';
+    workbook_.save(filename);
+
+} // dtra::v2::Sheet::write
+
+// ----------------------------------------------------------------------
+
+void dtra::v2::Sheet::merge(const Sheet& merge_in)
+{
+
+} // dtra::v2::Sheet::merge
 
 // ----------------------------------------------------------------------
 
