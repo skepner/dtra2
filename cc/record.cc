@@ -79,7 +79,10 @@ std::string dtra::v2::Record::validate(const Directory& locations, const Directo
     add_report("Serology Status", serology_status_);
     // add("*record-id*"                  , record_id_);
 
+    check_dates(reports);
     validate_hostspecies_commonname(birds, reports);
+    update_locations(locations, reports);
+    update_behavior(reports);
 
     if (reports.empty())
         return {};
@@ -127,6 +130,33 @@ void dtra::v2::Record::validate_hostspecies_commonname(const Directory& birds, s
     }
 
 } // dtra::v2::Record::validate_hostspecies_commonname
+
+// ----------------------------------------------------------------------
+
+void dtra::v2::Record::check_dates(std::vector<std::string>& reports)
+{
+    if (!date_of_testing_.empty() && collection_date_ > date_of_testing_)
+        reports.push_back(string::concat("collection date ", collection_date_.to_string(), " > date of testing ", date_of_testing_.to_string()));
+    if (!serology_testing_date_.empty() && collection_date_ > serology_testing_date_)
+        reports.push_back(string::concat("collection date ", collection_date_.to_string(), " > serology testing date ", serology_testing_date_.to_string()));
+
+} // dtra::v2::Record::check_dates
+
+// ----------------------------------------------------------------------
+
+void dtra::v2::Record::update_locations(const Directory& locations, std::vector<std::string>& reports)
+{
+    std::cerr << "WARNING: update_locations not implemented\n";
+
+} // dtra::v2::Record::update_locations
+
+// ----------------------------------------------------------------------
+
+void dtra::v2::Record::update_behavior(std::vector<std::string>& reports)
+{
+    std::cerr << "WARNING: update_behavior not implemented\n";
+
+} // dtra::v2::Record::update_behavior
 
 // ----------------------------------------------------------------------
 

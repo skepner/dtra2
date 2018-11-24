@@ -26,77 +26,25 @@ namespace dtra
                     now_ = *std::localtime(&now_c);
                 }
 
-                void set_day(std::string day)
-                {
-                    try {
-                        day_ = std::stoul(day);
-                        if (day_ < 1 || day_ > 31)
-                            errors_.push_back("invalid day: " + day);
-                    }
-                    catch (std::exception&) {
-                        errors_.push_back("invalid day: " + day);
-                    }
-                }
+                bool operator==(const Date& rhs) const { return year_ == rhs.year_ && month_ == rhs.month_ && day_ == rhs.day_; }
+                bool operator!=(const Date& rhs) const { return !operator==(rhs); }
+                bool operator<(const Date& rhs) const { return year_ == rhs.year_ ? (month_ == rhs.month_ ? day_ < rhs.day_ : month_ < rhs.month_) : year_ < rhs.year_; }
+                bool operator<=(const Date& rhs) const { return operator<(rhs) || operator==(rhs); }
+                bool operator>(const Date& rhs) const { return !operator<(rhs) && !operator==(rhs); }
+                bool operator>=(const Date& rhs) const { return !operator<(rhs); }
 
-                void set_month(std::string month)
-                {
-                    try {
-                        month_ = std::stoul(month);
-                        if (month_ < 1 || month_ > 12)
-                            errors_.push_back("invalid month: " + month);
-                    }
-                    catch (std::exception&) {
-                        errors_.push_back("invalid month: " + month);
-                    }
-                }
+                bool empty() const { return !year_ && !month_ && !day_; }
 
-                void set_year(std::string year)
-                {
-                    try {
-                        year_ = std::stoul(year);
-                        if (year_ < 2000 || year_ > static_cast<size_t>(now_.tm_year + 1900))
-                            errors_.push_back("invalid year: " + year);
-                    }
-                    catch (std::exception&) {
-                        errors_.push_back("invalid year: " + year);
-                    }
-                }
+                void set_day(std::string day);
+                void set_month(std::string month);
+                void set_year(std::string year);
 
                 std::vector<std::string> validate() const;
 
-                std::string to_string() const
-                {
-                    std::string result(20, ' ');
-                    result.resize(static_cast<size_t>(std::snprintf(result.data(), result.size(), "%04lu-%02lu-%02lu", year_, month_, day_)));
-                    return result;
-                }
-
-                std::string year() const
-                {
-                    if (!year_)
-                        return {};
-                    std::string result(4, ' ');
-                    std::snprintf(result.data(), result.size(), "%04lu", year_);
-                    return result;
-                }
-
-                std::string month() const
-                {
-                    if (!month_)
-                        return {};
-                    std::string result(4, ' ');
-                    std::snprintf(result.data(), result.size(), "%02lu", month_);
-                    return result;
-                }
-
-                std::string day() const
-                {
-                    if (!day_)
-                        return {};
-                    std::string result(4, ' ');
-                    std::snprintf(result.data(), result.size(), "%02lu", day_);
-                    return result;
-                }
+                std::string to_string() const;
+                std::string year() const;
+                std::string month() const;
+                std::string day() const;
 
               private:
                 const can_be_empty can_be_empty_ = can_be_empty::yes;

@@ -133,6 +133,10 @@ namespace dtra
             field::Text      record_id_;
 
             void validate_hostspecies_commonname(const Directory& birds, std::vector<std::string>& reports);
+            void check_dates(std::vector<std::string>& reports);
+            void update_locations(const Directory& locations, std::vector<std::string>& reports);
+            void update_behavior(std::vector<std::string>& reports);
+
         };
 
     } // namespace v2

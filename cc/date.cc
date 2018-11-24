@@ -2,6 +2,90 @@
 
 // ----------------------------------------------------------------------
 
+void dtra::v2::field::Date::set_day(std::string day)
+{
+    try {
+        day_ = std::stoul(day);
+        if (day_ < 1 || day_ > 31)
+            errors_.push_back("invalid day: " + day);
+    }
+    catch (std::exception&) {
+        errors_.push_back("invalid day: " + day);
+    }
+}
+
+// ----------------------------------------------------------------------
+
+void dtra::v2::field::Date::set_month(std::string month)
+{
+    try {
+        month_ = std::stoul(month);
+        if (month_ < 1 || month_ > 12)
+            errors_.push_back("invalid month: " + month);
+    }
+    catch (std::exception&) {
+        errors_.push_back("invalid month: " + month);
+    }
+}
+
+// ----------------------------------------------------------------------
+
+void dtra::v2::field::Date::set_year(std::string year)
+{
+    try {
+        year_ = std::stoul(year);
+        if (year_ < 2000 || year_ > static_cast<size_t>(now_.tm_year + 1900))
+            errors_.push_back("invalid year: " + year);
+    }
+    catch (std::exception&) {
+        errors_.push_back("invalid year: " + year);
+    }
+}
+
+// ----------------------------------------------------------------------
+
+std::string dtra::v2::field::Date::to_string() const
+{
+    std::string result(20, ' ');
+    result.resize(static_cast<size_t>(std::snprintf(result.data(), result.size(), "%04lu-%02lu-%02lu", year_, month_, day_)));
+    return result;
+}
+
+// ----------------------------------------------------------------------
+
+std::string dtra::v2::field::Date::year() const
+{
+    if (!year_)
+        return {};
+    std::string result(4, ' ');
+    std::snprintf(result.data(), result.size(), "%04lu", year_);
+    return result;
+}
+
+// ----------------------------------------------------------------------
+
+std::string dtra::v2::field::Date::month() const
+{
+    if (!month_)
+        return {};
+    std::string result(4, ' ');
+    std::snprintf(result.data(), result.size(), "%02lu", month_);
+    return result;
+}
+
+// ----------------------------------------------------------------------
+
+std::string dtra::v2::field::Date::day() const
+{
+    if (!day_)
+        return {};
+    std::string result(4, ' ');
+    std::snprintf(result.data(), result.size(), "%02lu", day_);
+    return result;
+}
+
+// ----------------------------------------------------------------------
+
 std::vector<std::string> dtra::v2::field::Date::validate() const
 {
     if (errors_.empty()) {
