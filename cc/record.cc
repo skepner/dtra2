@@ -146,15 +146,22 @@ void dtra::v2::Record::check_dates(std::vector<std::string>& reports)
 
 void dtra::v2::Record::update_locations(const Directory& locations, std::vector<std::string>& reports)
 {
-    std::cerr << "WARNING: update_locations not implemented\n";
+      //std::cerr << "WARNING: update_locations not implemented\n";
 
 } // dtra::v2::Record::update_locations
 
 // ----------------------------------------------------------------------
 
+// Nic 2015-02-10: If 'domesticus' in the species field please
+// autofill behavior as D, All other species entries please autofill
+// behavior as W
 void dtra::v2::Record::update_behavior(std::vector<std::string>& reports)
 {
-    std::cerr << "WARNING: update_behavior not implemented\n";
+    const bool domesticus = host_species_.find("domesticus") != std::string::npos;
+    if (behavior_.empty())
+        behavior_ = domesticus ? "D" : "W";
+    else if ((domesticus && behavior_ != "D") || (!domesticus && behavior_ != "W"))
+        reports.push_back(string::concat("host species ", host_species_, " does not correspond to behavior ", behavior_));
 
 } // dtra::v2::Record::update_behavior
 

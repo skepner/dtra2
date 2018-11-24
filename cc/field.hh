@@ -46,7 +46,7 @@ namespace dtra
                 std::vector<std::string> validate() const;
 
               protected:
-                virtual void fix_on_assign() {}
+                virtual void fix_on_assign() { string::strip_in_place(*this); }
 
               private:
                 const can_be_empty can_be_empty_ = can_be_empty::yes;
@@ -65,7 +65,11 @@ namespace dtra
                 std::vector<std::string> validate() const;
 
              protected:
-                virtual void fix_on_assign() { std::transform(begin(), end(), begin(), [](unsigned char src) { return std::toupper(src); }); }
+               void fix_on_assign() override
+               {
+                   Text::fix_on_assign();
+                   std::transform(begin(), end(), begin(), [](unsigned char src) { return std::toupper(src); });
+               }
 
              private:
                 const std::optional<std::regex> re_validator_;

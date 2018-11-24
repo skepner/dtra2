@@ -57,13 +57,12 @@ namespace string
         }
     } // namespace _internal
 
-    // inline std::string& strip(std::string& source)
-    // {
-    //     auto be = _internal::strip_begin_end<std::string::iterator>(source);
-    //     source.erase(be.second, source.end()); // erase at the end first
-    //     source.erase(source.begin(), be.first); // invalidates be.second!
-    //     return source;
-    // }
+    inline void strip_in_place(std::string& source)
+    {
+        const auto be = _internal::strip_begin_end<std::string::iterator>(source);
+        source.erase(be.second, source.end()); // erase at the end first
+        source.erase(source.begin(), be.first); // invalidates be.second!
+    }
 
     // inline std::string strip(std::string&& source)
     // {
@@ -75,7 +74,7 @@ namespace string
 
     inline std::string strip(std::string source)
     {
-        auto be = _internal::strip_begin_end<std::string::const_iterator>(source);
+        const auto be = _internal::strip_begin_end<std::string::const_iterator>(source);
         return std::string(be.first, be.second);
     }
 
