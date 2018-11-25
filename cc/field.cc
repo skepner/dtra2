@@ -1,3 +1,4 @@
+#include <iostream>
 #include "string.hh"
 #include "field.hh"
 
@@ -39,6 +40,7 @@ dtra::v2::field::Float& dtra::v2::field::Float::operator=(double source)
 dtra::v2::field::Float& dtra::v2::field::Float::operator=(const std::string& source)
 {
     const auto stripped = string::strip(source);
+    // std::cerr << "DEBUG: float " << stripped << ' ' << stripped.empty() << '\n';
     if (!stripped.empty()) {
         size_t end;
         try {
@@ -50,6 +52,8 @@ dtra::v2::field::Float& dtra::v2::field::Float::operator=(const std::string& sou
             errors_.push_back("number expected");
         }
     }
+    else
+        value_.reset();
     return *this;
 
 } // dtra::v2::field::Float::operator=

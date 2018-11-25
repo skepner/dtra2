@@ -76,6 +76,9 @@ namespace dtra
             void set_serology_status(const xlnt::cell& cell);
             void set_record_id(const xlnt::cell& cell);
 
+            const auto& sample_id() const { return sample_id_; }
+            const auto& latitude() const { return latitude_; }
+
          private:
             static constexpr const char* re_sample_id = "^(217|DT)-[0-9]+$";
             static constexpr const char* sample_id_message = "expected: 217-xxxxx, DT-xxxxx";

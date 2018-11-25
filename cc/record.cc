@@ -1,3 +1,4 @@
+#include <iostream>
 #include "xlnt.hh"
 #include "float.hh"
 #include "record.hh"
@@ -157,7 +158,7 @@ void dtra::v2::Record::update_locations(const Directory& locations, std::vector<
             if (field.empty())
                 field = expected;
             else if (field != expected)
-                throw std::runtime_error(string::concat("invalid ", field, " (", field, ") for ", location_, " (expected: ", expected, "), please leave Province, Country, Latitude, Longitude fields empty to allow system to fill them with the correct content"));
+                throw std::runtime_error(string::concat("invalid ", field_name, " (", field, ") for ", location_, " (expected: ", expected, "), please leave Province, Country, Latitude, Longitude fields empty to allow system to fill them with the correct content"));
         };
 
         const auto check_float = [this,&loc_data](const char* field_name, field::Float& field) {
@@ -165,7 +166,7 @@ void dtra::v2::Record::update_locations(const Directory& locations, std::vector<
             if (field.empty())
                 field = expected;
             else if (!float_equal(static_cast<double>(field), expected))
-                throw std::runtime_error(string::concat("invalid ", field, " (", field, ") for ", location_, " (expected: ", expected, "), please leave Province, Country, Latitude, Longitude fields empty to allow system to fill them with the correct content"));
+                throw std::runtime_error(string::concat("invalid ", field_name, " (", field, ") for ", location_, " (expected: ", expected, "), please leave Province, Country, Latitude, Longitude fields empty to allow system to fill them with the correct content"));
         };
 
         check("province", province_);

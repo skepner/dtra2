@@ -99,7 +99,7 @@ namespace dtra
                 Float& operator=(const std::string& source);
                 Float& operator=(double source);
 
-                bool empty() const { return bool(value_); }
+                bool empty() const { return !value_; }
                 operator double() const { return *value_; }
                 std::vector<std::string> validate() const;
 

@@ -116,8 +116,19 @@ void dtra::v2::Sheet::read(const char* filename)
 void dtra::v2::Sheet::write(const char* filename) const
 {
     auto ws = workbook_.active_sheet();
-      // erase all cells except header (first two rows)
-      // fill in rows
+    // erase all cells except header (first two rows)
+    for (xlnt::row_t row = 3; row <= ws.highest_row(); ++row)
+        ws.clear_row(row);
+    // fill in rows
+    ws.reserve(records_.size() + 2);
+    auto current_cell = xlnt::cell_reference("A3");
+    for (const auto& record : records_) {
+        ws.cell(current_cell).value(record.sample_id());
+        current_cell.column_index(current_cell.column_index() + 1);
+        break;
+        current_cell.row(current_cell.row() + 1);
+        current_cell.column_index("A");
+    }
     std::cout << "Writing " << filename << '\n';
     workbook_.save(filename);
 
