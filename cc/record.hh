@@ -29,8 +29,8 @@ namespace dtra
             std::string validate(const Directory& locations, const Directory& birds);
             std::string merge(const Record& rec);
 
-
             static std::string new_record_id();
+            void reset_record_id() { record_id_ = new_record_id(); }
 
             static constexpr const char* re_sample_id = "^(217|DT)-[0-9]+$";
             static constexpr const char* sample_id_message = "expected: 217-xxxxx, DT-xxxxx";

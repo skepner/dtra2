@@ -157,7 +157,7 @@ std::string dtra::v2::Record::merge(const dtra::v2::Record& rec)
     auto conflict_health = [&conflict,this](std::string field_name, auto& field, const auto& source) {
         if (capture_method_status_ != "K" && (field == "H" || source == "H")) {
             field = "H";
-            record_id_.clear();
+            record_id_ = new_record_id();
         }
         else
             conflict(field_name, field, source);
@@ -167,7 +167,7 @@ std::string dtra::v2::Record::merge(const dtra::v2::Record& rec)
     auto conflict_capture_method_status = [&conflict,this](std::string field_name, auto& field, const auto& source) {
         if ((field == "K" && source == "A") || (field == "A" && source == "K")) {
             field = "K";
-            record_id_.clear();
+            record_id_ = new_record_id();
         }
         else
             conflict(field_name, field, source);
@@ -177,7 +177,7 @@ std::string dtra::v2::Record::merge(const dtra::v2::Record& rec)
     auto conflict_age = [&conflict,this](std::string field_name, auto& field, const auto& source) {
         if ((field == "A" && source == "U") || (field == "U" && source == "A")) {
             field = "A";
-            record_id_.clear();
+            record_id_ = new_record_id();
         }
         else
             conflict(field_name, field, source);
@@ -187,7 +187,7 @@ std::string dtra::v2::Record::merge(const dtra::v2::Record& rec)
     auto conflict_collection_date = [&conflict,this](std::string field_name, auto& field, const auto& source) {
         if (field < source) {
             field = source;
-            record_id_.clear();
+            record_id_ = new_record_id();
         }
         else
             conflict(field_name, field, source);
@@ -197,7 +197,7 @@ std::string dtra::v2::Record::merge(const dtra::v2::Record& rec)
         if (field.empty()) {
             if (!source.empty()) {
                 field = source;
-                record_id_.clear();
+                record_id_ = new_record_id();
             }
         }
         else if (!source.empty() && field != source) {
