@@ -915,6 +915,288 @@ void dtra::v2::Record::get_serology_status(xlnt::cell& cell) const
     cell.value(serology_status_);
 }
 
+// ----------------------------------------------------------------------
+// ----------------------------------------------------------------------
+
+std::string dtra::v2::Record::csv_record_id() const
+{
+    if (!record_id_.empty())
+        return record_id_;
+    else
+        return new_record_id();
+}
+
+std::string dtra::v2::Record::csv_sample_id() const
+{
+    return sample_id_;
+}
+
+std::string dtra::v2::Record::csv_collection_day() const
+{
+    if (!collection_date_.empty())
+        return acmacs::to_string(collection_date_.day());
+    else
+        return {};
+}
+
+std::string dtra::v2::Record::csv_collection_month() const
+{
+    if (!collection_date_.empty())
+        return acmacs::to_string(collection_date_.month());
+    else
+        return {};
+}
+
+std::string dtra::v2::Record::csv_collection_year() const
+{
+    if (!collection_date_.empty())
+        return acmacs::to_string(collection_date_.year());
+    else
+        return {};
+}
+
+std::string dtra::v2::Record::csv_species() const
+{
+    if (!species_.empty())
+        return species_;
+    else
+        return {};
+}
+
+std::string dtra::v2::Record::csv_age() const
+{
+    return age_;
+}
+
+std::string dtra::v2::Record::csv_sex() const
+{
+    return sex_;
+}
+
+std::string dtra::v2::Record::csv_ring_number() const
+{
+    return ring_number_;
+}
+
+std::string dtra::v2::Record::csv_host_identifier() const
+{
+    return host_identifier_;
+}
+
+std::string dtra::v2::Record::csv_host_species() const
+{
+    return host_species_;
+}
+
+std::string dtra::v2::Record::csv_host_common_name() const
+{
+    return host_common_name_;
+}
+
+std::string dtra::v2::Record::csv_health() const
+{
+    return health_;
+}
+
+std::string dtra::v2::Record::csv_capture_method_status() const
+{
+    return capture_method_status_;
+}
+
+std::string dtra::v2::Record::csv_behavior() const
+{
+    return behavior_;
+}
+
+std::string dtra::v2::Record::csv_location() const
+{
+    return location_;
+}
+
+std::string dtra::v2::Record::csv_province() const
+{
+    return province_;
+}
+
+std::string dtra::v2::Record::csv_country() const
+{
+    return country_;
+}
+
+std::string dtra::v2::Record::csv_latitude() const
+{
+    return latitude_.to_string();
+}
+
+std::string dtra::v2::Record::csv_longitude() const
+{
+    return longitude_.to_string();
+}
+
+std::string dtra::v2::Record::csv_sample_material() const
+{
+    return sample_material_;
+}
+
+std::string dtra::v2::Record::csv_test_for_influenza_virus() const
+{
+    return test_for_influenza_virus_;
+}
+
+std::string dtra::v2::Record::csv_day_of_testing() const
+{
+    if (!date_of_testing_.empty())
+        return acmacs::to_string(date_of_testing_.day());
+    else
+        return {};
+}
+
+std::string dtra::v2::Record::csv_month_of_testing() const
+{
+    if (!date_of_testing_.empty())
+        return acmacs::to_string(date_of_testing_.month());
+    else
+        return {};
+}
+
+std::string dtra::v2::Record::csv_year_of_testing() const
+{
+    if (!date_of_testing_.empty())
+        return acmacs::to_string(date_of_testing_.year());
+    else
+        return {};
+}
+
+std::string dtra::v2::Record::csv_pool_id() const
+{
+    return pool_id_;
+}
+
+std::string dtra::v2::Record::csv_influenza_test_result() const
+{
+    return influenza_test_result_;
+}
+
+std::string dtra::v2::Record::csv_ma_ct_value() const
+{
+    return ma_ct_value_;
+}
+
+std::string dtra::v2::Record::csv_h5_status() const
+{
+    return h5_status_;
+}
+
+std::string dtra::v2::Record::csv_h5_ct_value() const
+{
+    return h5_ct_value_;
+}
+
+std::string dtra::v2::Record::csv_h5_pathotype() const
+{
+    return h5_pathotype_;
+}
+
+std::string dtra::v2::Record::csv_h7_status() const
+{
+    return h7_status_;
+}
+
+std::string dtra::v2::Record::csv_h7_ct_value() const
+{
+    return h7_ct_value_;
+}
+
+std::string dtra::v2::Record::csv_h7_pathotype() const
+{
+    return h7_pathotype_;
+}
+
+std::string dtra::v2::Record::csv_h9_status() const
+{
+    return h9_status_;
+}
+
+std::string dtra::v2::Record::csv_h9_ct_value() const
+{
+    return h9_ct_value_;
+}
+
+std::string dtra::v2::Record::csv_emc_id() const
+{
+    return emc_id_;
+}
+
+std::string dtra::v2::Record::csv_ahvla_id() const
+{
+    return ahvla_id_;
+}
+
+std::string dtra::v2::Record::csv_first_egg_passage() const
+{
+    return first_egg_passage_;
+}
+
+std::string dtra::v2::Record::csv_second_egg_passage() const
+{
+    return second_egg_passage_;
+}
+
+std::string dtra::v2::Record::csv_passage_isolation() const
+{
+    return passage_isolation_;
+}
+
+std::string dtra::v2::Record::csv_virus_pathotype() const
+{
+    return virus_pathotype_;
+}
+
+std::string dtra::v2::Record::csv_haemagglutinin_subtype() const
+{
+    return haemagglutinin_subtype_;
+}
+
+std::string dtra::v2::Record::csv_neuraminidase_subtype() const
+{
+    return neuraminidase_subtype_;
+}
+
+std::string dtra::v2::Record::csv_serology_sample_id() const
+{
+    return serology_sample_id_;
+}
+
+std::string dtra::v2::Record::csv_serology_testing_day() const
+{
+    if (!serology_testing_date_.empty())
+        return acmacs::to_string(serology_testing_date_.day());
+    else
+        return {};
+}
+
+std::string dtra::v2::Record::csv_serology_testing_month() const
+{
+    if (!serology_testing_date_.empty())
+        return acmacs::to_string(serology_testing_date_.month());
+    else
+        return {};
+}
+
+std::string dtra::v2::Record::csv_serology_testing_year() const
+{
+    if (!serology_testing_date_.empty())
+        return acmacs::to_string(serology_testing_date_.year());
+    else
+        return {};
+}
+
+std::string dtra::v2::Record::csv_serology_status() const
+{
+    return serology_status_;
+}
+
+
 // capture_method_status_
 // ----------------------
 // A=Active surveillance (e.g. trap); sampling not initiated by an outbreak

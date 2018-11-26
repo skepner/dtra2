@@ -20,6 +20,7 @@ namespace dtra
 
             void read(const char* filename);
             void write(const char* filename) const;
+            void write_csv(const char* filename) const;
             void merge(const Sheet& merge_in);
             std::string report() const { return report_; }
 

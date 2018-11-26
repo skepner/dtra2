@@ -1,12 +1,16 @@
 #include <map>
 #include <regex>
+#include <tuple>
+#include <fstream>
 
 #include "sheet.hh"
+#include "csv.hh"
 
 // ----------------------------------------------------------------------
 
 using field_importer_t = void (dtra::Record::*)(const xlnt::cell& cell);
 using field_exporter_t = void (dtra::Record::*)(xlnt::cell& cell) const;
+using csv_exporter_t = std::string (dtra::Record::*)() const;
 
 #pragma GCC diagnostic push
 #ifdef __clang__
@@ -14,56 +18,56 @@ using field_exporter_t = void (dtra::Record::*)(xlnt::cell& cell) const;
 #pragma GCC diagnostic ignored "-Wglobal-constructors"
 #endif
 
-static const std::map<std::string, std::pair<field_importer_t, field_exporter_t>> name_to_importer = {
-    {"Sample ID"                    , {&dtra::Record::set_sample_id, &dtra::Record::get_sample_id}},
-    {"Collection Day"               , {&dtra::Record::set_collection_day, &dtra::Record::get_collection_day}},
-    {"Collection Month"             , {&dtra::Record::set_collection_month, &dtra::Record::get_collection_month}},
-    {"Collection Year"              , {&dtra::Record::set_collection_year, &dtra::Record::get_collection_year}},
-    {"Species"                      , {&dtra::Record::set_species, &dtra::Record::get_species}},
-    {"Age"                          , {&dtra::Record::set_age, &dtra::Record::get_age}},
-    {"Sex"                          , {&dtra::Record::set_sex, &dtra::Record::get_sex}},
-    {"Ring #"                       , {&dtra::Record::set_ring_number, &dtra::Record::get_ring_number}},
-    {"Host_identifier"              , {&dtra::Record::set_host_identifier, &dtra::Record::get_host_identifier}},
-    {"Host Species"                 , {&dtra::Record::set_host_species, &dtra::Record::get_host_species}},
-    {"Host Common name"             , {&dtra::Record::set_host_common_name, &dtra::Record::get_host_common_name}},
-    {"Health"                       , {&dtra::Record::set_health, &dtra::Record::get_health}},
-    {"Capture Method/Capture status", {&dtra::Record::set_capture_method_status, &dtra::Record::get_capture_method_status}},
-    {"Behavior"                     , {&dtra::Record::set_behavior, &dtra::Record::get_behavior}},
-    {"Location"                     , {&dtra::Record::set_location, &dtra::Record::get_location}},
-    {"Province"                     , {&dtra::Record::set_province, &dtra::Record::get_province}},
-    {"Country"                      , {&dtra::Record::set_country, &dtra::Record::get_country}},
-    {"Latitude"                     , {&dtra::Record::set_latitude, &dtra::Record::get_latitude}},
-    {"Longitude"                    , {&dtra::Record::set_longitude, &dtra::Record::get_longitude}},
-    {"Sample material"              , {&dtra::Record::set_sample_material, &dtra::Record::get_sample_material}},
-    {"Test for influenza virus"     , {&dtra::Record::set_test_for_influenza_virus, &dtra::Record::get_test_for_influenza_virus}},
-    {"Day of Testing"               , {&dtra::Record::set_day_of_testing, &dtra::Record::get_day_of_testing}},
-    {"Month of Testing"             , {&dtra::Record::set_month_of_testing, &dtra::Record::get_month_of_testing}},
-    {"Year of Testing"              , {&dtra::Record::set_year_of_testing, &dtra::Record::get_year_of_testing}},
-    {"Pool ID"                      , {&dtra::Record::set_pool_id, &dtra::Record::get_pool_id}},
-    {"Influenza test result"        , {&dtra::Record::set_influenza_test_result, &dtra::Record::get_influenza_test_result}},
-    {"MA Ct Value"                  , {&dtra::Record::set_ma_ct_value, &dtra::Record::get_ma_ct_value}},
-    {"H5 Status"                    , {&dtra::Record::set_h5_status, &dtra::Record::get_h5_status}},
-    {"H5 Ct Value"                  , {&dtra::Record::set_h5_ct_value, &dtra::Record::get_h5_ct_value}},
-    {"H5 Pathotype"                 , {&dtra::Record::set_h5_pathotype, &dtra::Record::get_h5_pathotype}},
-    {"H7 Status"                    , {&dtra::Record::set_h7_status, &dtra::Record::get_h7_status}},
-    {"H7 Ct Value"                  , {&dtra::Record::set_h7_ct_value, &dtra::Record::get_h7_ct_value}},
-    {"H7 Pathotype"                 , {&dtra::Record::set_h7_pathotype, &dtra::Record::get_h7_pathotype}},
-    {"H9 Status"                    , {&dtra::Record::set_h9_status, &dtra::Record::get_h9_status}},
-    {"H9 Ct Value"                  , {&dtra::Record::set_h9_ct_value, &dtra::Record::get_h9_ct_value}},
-    {"EMC ID"                       , {&dtra::Record::set_emc_id, &dtra::Record::get_emc_id}},
-    {"AHVLA ID"                     , {&dtra::Record::set_ahvla_id, &dtra::Record::get_ahvla_id}},
-    {"First Egg Passage"            , {&dtra::Record::set_first_egg_passage, &dtra::Record::get_first_egg_passage}},
-    {"Second Egg Passage"           , {&dtra::Record::set_second_egg_passage, &dtra::Record::get_second_egg_passage}},
-    {"Passage Isolation"            , {&dtra::Record::set_passage_isolation, &dtra::Record::get_passage_isolation}},
-    {"Virus Pathotype"              , {&dtra::Record::set_virus_pathotype, &dtra::Record::get_virus_pathotype}},
-    {"Haemagglutinin Subtype"       , {&dtra::Record::set_haemagglutinin_subtype, &dtra::Record::get_haemagglutinin_subtype}},
-    {"Neuraminidase Subtype"        , {&dtra::Record::set_neuraminidase_subtype, &dtra::Record::get_neuraminidase_subtype}},
-    {"Serology Sample ID"           , {&dtra::Record::set_serology_sample_id, &dtra::Record::get_serology_sample_id}},
-    {"Serology Testing Day"         , {&dtra::Record::set_serology_testing_day, &dtra::Record::get_serology_testing_day}},
-    {"Serology Testing Month"       , {&dtra::Record::set_serology_testing_month, &dtra::Record::get_serology_testing_month}},
-    {"Serology Testing Year"        , {&dtra::Record::set_serology_testing_year, &dtra::Record::get_serology_testing_year}},
-    {"Serology Status"              , {&dtra::Record::set_serology_status, &dtra::Record::get_serology_status}},
-    {"*record-id*"                  , {&dtra::Record::set_record_id, &dtra::Record::get_record_id}},
+static const std::map<std::string, std::tuple<field_importer_t, field_exporter_t, csv_exporter_t>> name_to_importer = {
+    {"Sample ID"                    , {&dtra::Record::set_sample_id, &dtra::Record::get_sample_id, &dtra::Record::csv_sample_id}},
+    {"Collection Day"               , {&dtra::Record::set_collection_day, &dtra::Record::get_collection_day, &dtra::Record::csv_collection_day}},
+    {"Collection Month"             , {&dtra::Record::set_collection_month, &dtra::Record::get_collection_month, &dtra::Record::csv_collection_month}},
+    {"Collection Year"              , {&dtra::Record::set_collection_year, &dtra::Record::get_collection_year, &dtra::Record::csv_collection_year}},
+    {"Species"                      , {&dtra::Record::set_species, &dtra::Record::get_species, &dtra::Record::csv_species}},
+    {"Age"                          , {&dtra::Record::set_age, &dtra::Record::get_age, &dtra::Record::csv_age}},
+    {"Sex"                          , {&dtra::Record::set_sex, &dtra::Record::get_sex, &dtra::Record::csv_sex}},
+    {"Ring #"                       , {&dtra::Record::set_ring_number, &dtra::Record::get_ring_number, &dtra::Record::csv_ring_number}},
+    {"Host_identifier"              , {&dtra::Record::set_host_identifier, &dtra::Record::get_host_identifier, &dtra::Record::csv_host_identifier}},
+    {"Host Species"                 , {&dtra::Record::set_host_species, &dtra::Record::get_host_species, &dtra::Record::csv_host_species}},
+    {"Host Common name"             , {&dtra::Record::set_host_common_name, &dtra::Record::get_host_common_name, &dtra::Record::csv_host_common_name}},
+    {"Health"                       , {&dtra::Record::set_health, &dtra::Record::get_health, &dtra::Record::csv_health}},
+    {"Capture Method/Capture status", {&dtra::Record::set_capture_method_status, &dtra::Record::get_capture_method_status, &dtra::Record::csv_capture_method_status}},
+    {"Behavior"                     , {&dtra::Record::set_behavior, &dtra::Record::get_behavior, &dtra::Record::csv_behavior}},
+    {"Location"                     , {&dtra::Record::set_location, &dtra::Record::get_location, &dtra::Record::csv_location}},
+    {"Province"                     , {&dtra::Record::set_province, &dtra::Record::get_province, &dtra::Record::csv_province}},
+    {"Country"                      , {&dtra::Record::set_country, &dtra::Record::get_country, &dtra::Record::csv_country}},
+    {"Latitude"                     , {&dtra::Record::set_latitude, &dtra::Record::get_latitude, &dtra::Record::csv_latitude}},
+    {"Longitude"                    , {&dtra::Record::set_longitude, &dtra::Record::get_longitude, &dtra::Record::csv_longitude}},
+    {"Sample material"              , {&dtra::Record::set_sample_material, &dtra::Record::get_sample_material, &dtra::Record::csv_sample_material}},
+    {"Test for influenza virus"     , {&dtra::Record::set_test_for_influenza_virus, &dtra::Record::get_test_for_influenza_virus, &dtra::Record::csv_test_for_influenza_virus}},
+    {"Day of Testing"               , {&dtra::Record::set_day_of_testing, &dtra::Record::get_day_of_testing, &dtra::Record::csv_day_of_testing}},
+    {"Month of Testing"             , {&dtra::Record::set_month_of_testing, &dtra::Record::get_month_of_testing, &dtra::Record::csv_month_of_testing}},
+    {"Year of Testing"              , {&dtra::Record::set_year_of_testing, &dtra::Record::get_year_of_testing, &dtra::Record::csv_year_of_testing}},
+    {"Pool ID"                      , {&dtra::Record::set_pool_id, &dtra::Record::get_pool_id, &dtra::Record::csv_pool_id}},
+    {"Influenza test result"        , {&dtra::Record::set_influenza_test_result, &dtra::Record::get_influenza_test_result, &dtra::Record::csv_influenza_test_result}},
+    {"MA Ct Value"                  , {&dtra::Record::set_ma_ct_value, &dtra::Record::get_ma_ct_value, &dtra::Record::csv_ma_ct_value}},
+    {"H5 Status"                    , {&dtra::Record::set_h5_status, &dtra::Record::get_h5_status, &dtra::Record::csv_h5_status}},
+    {"H5 Ct Value"                  , {&dtra::Record::set_h5_ct_value, &dtra::Record::get_h5_ct_value, &dtra::Record::csv_h5_ct_value}},
+    {"H5 Pathotype"                 , {&dtra::Record::set_h5_pathotype, &dtra::Record::get_h5_pathotype, &dtra::Record::csv_h5_pathotype}},
+    {"H7 Status"                    , {&dtra::Record::set_h7_status, &dtra::Record::get_h7_status, &dtra::Record::csv_h7_status}},
+    {"H7 Ct Value"                  , {&dtra::Record::set_h7_ct_value, &dtra::Record::get_h7_ct_value, &dtra::Record::csv_h7_ct_value}},
+    {"H7 Pathotype"                 , {&dtra::Record::set_h7_pathotype, &dtra::Record::get_h7_pathotype, &dtra::Record::csv_h7_pathotype}},
+    {"H9 Status"                    , {&dtra::Record::set_h9_status, &dtra::Record::get_h9_status, &dtra::Record::csv_h9_status}},
+    {"H9 Ct Value"                  , {&dtra::Record::set_h9_ct_value, &dtra::Record::get_h9_ct_value, &dtra::Record::csv_h9_ct_value}},
+    {"EMC ID"                       , {&dtra::Record::set_emc_id, &dtra::Record::get_emc_id, &dtra::Record::csv_emc_id}},
+    {"AHVLA ID"                     , {&dtra::Record::set_ahvla_id, &dtra::Record::get_ahvla_id, &dtra::Record::csv_ahvla_id}},
+    {"First Egg Passage"            , {&dtra::Record::set_first_egg_passage, &dtra::Record::get_first_egg_passage, &dtra::Record::csv_first_egg_passage}},
+    {"Second Egg Passage"           , {&dtra::Record::set_second_egg_passage, &dtra::Record::get_second_egg_passage, &dtra::Record::csv_second_egg_passage}},
+    {"Passage Isolation"            , {&dtra::Record::set_passage_isolation, &dtra::Record::get_passage_isolation, &dtra::Record::csv_passage_isolation}},
+    {"Virus Pathotype"              , {&dtra::Record::set_virus_pathotype, &dtra::Record::get_virus_pathotype, &dtra::Record::csv_virus_pathotype}},
+    {"Haemagglutinin Subtype"       , {&dtra::Record::set_haemagglutinin_subtype, &dtra::Record::get_haemagglutinin_subtype, &dtra::Record::csv_haemagglutinin_subtype}},
+    {"Neuraminidase Subtype"        , {&dtra::Record::set_neuraminidase_subtype, &dtra::Record::get_neuraminidase_subtype, &dtra::Record::csv_neuraminidase_subtype}},
+    {"Serology Sample ID"           , {&dtra::Record::set_serology_sample_id, &dtra::Record::get_serology_sample_id, &dtra::Record::csv_serology_sample_id}},
+    {"Serology Testing Day"         , {&dtra::Record::set_serology_testing_day, &dtra::Record::get_serology_testing_day, &dtra::Record::csv_serology_testing_day}},
+    {"Serology Testing Month"       , {&dtra::Record::set_serology_testing_month, &dtra::Record::get_serology_testing_month, &dtra::Record::csv_serology_testing_month}},
+    {"Serology Testing Year"        , {&dtra::Record::set_serology_testing_year, &dtra::Record::get_serology_testing_year, &dtra::Record::csv_serology_testing_year}},
+    {"Serology Status"              , {&dtra::Record::set_serology_status, &dtra::Record::get_serology_status, &dtra::Record::csv_serology_status}},
+    {"*record-id*"                  , {&dtra::Record::set_record_id, &dtra::Record::get_record_id, &dtra::Record::csv_record_id}},
 };
 
 #pragma GCC diagnostic pop
@@ -84,7 +88,7 @@ void dtra::v2::Sheet::read(const char* filename)
     for (xlnt::column_t col = 1; col <= ws.highest_column(); ++col) {
         const auto label = ws.cell(col, 2).value<std::string>();
         if (const auto found = name_to_importer.find(label); found != name_to_importer.end()) {
-            importers[col] = found->second.first;
+            importers[col] = std::get<field_importer_t>(found->second);
         }
         else if (std::regex_match(label, std::regex{"^20[12][0-9]-[01][0-9]-[0-3][0-9]-[0-2][0-9]-[0-5][0-9]-[0-5][0-9]$"})) { // sheet id
             std::cout << "sheet-id: " << label << '\n';
@@ -125,7 +129,7 @@ void dtra::v2::Sheet::write(const char* filename) const
     for (xlnt::column_t col = 1; col <= ws.highest_column(); ++col) {
         const auto label = ws.cell(col, 2).value<std::string>();
         if (const auto found = name_to_importer.find(label); found != name_to_importer.end())
-            exporters[col] = found->second.second;
+            exporters[col] = std::get<field_exporter_t>(found->second);
         else if (std::regex_match(label, std::regex{"^20[12][0-9]-[01][0-9]-[0-3][0-9]-[0-2][0-9]-[0-5][0-9]-[0-5][0-9]$"})) // sheet id
             exporters[col] = &Record::get_record_id;
         else {
@@ -178,6 +182,44 @@ void dtra::v2::Sheet::merge(const Sheet& merge_in)
     }
 
 } // dtra::v2::Sheet::merge
+
+// ----------------------------------------------------------------------
+
+void dtra::v2::Sheet::write_csv(const char* filename) const
+{
+    acmacs::CsvWriter csv;
+
+    auto ws = workbook_.active_sheet();
+    for (xlnt::column_t col = 1; col <= ws.highest_column(); ++col)
+        csv.add_field(ws.cell(col, 1).value<std::string>());
+    csv.new_row();
+      // column fillers
+    std::map<xlnt::column_t, csv_exporter_t> exporters;
+    for (xlnt::column_t col = 1; col <= ws.highest_column(); ++col) {
+        const auto label = ws.cell(col, 2).value<std::string>();
+        csv.add_field(label);
+        if (const auto found = name_to_importer.find(label); found != name_to_importer.end())
+            exporters[col] = std::get<csv_exporter_t>(found->second);
+        else if (std::regex_match(label, std::regex{"^20[12][0-9]-[01][0-9]-[0-3][0-9]-[0-2][0-9]-[0-5][0-9]-[0-5][0-9]$"})) // sheet id
+            exporters[col] = &Record::csv_record_id;
+        else {
+            std::cerr << "WARNING: unrecognized column label " << col.column_string() << " [" << label << "]\n";
+            exporters[col] = &Record::csv_exporter_default;
+        }
+    }
+    csv.new_row();
+
+    for (const auto& record : records_) {
+        for (xlnt::column_t col = 1; col <= ws.highest_column(); ++col)
+            csv.add_field(std::invoke(exporters[col], record));
+        csv.new_row();
+    }
+
+    std::ofstream output(filename);
+    const std::string_view data = csv;
+    output.write(data.data(), data.size());
+
+} // dtra::v2::Sheet::write_csv
 
 // ----------------------------------------------------------------------
 

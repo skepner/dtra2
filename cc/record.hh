@@ -24,6 +24,7 @@ namespace dtra
           public:
             void importer_default(const xlnt::cell& cell);
             void exporter_default(xlnt::cell& cell) const;
+            std::string csv_exporter_default() const { return {}; }
 
             std::string validate(const Directory& locations, const Directory& birds);
 
@@ -126,6 +127,56 @@ namespace dtra
             void get_serology_testing_year(xlnt::cell& cell) const;
             void get_serology_status(xlnt::cell& cell) const;
             void get_record_id(xlnt::cell& cell) const;
+
+            std::string csv_sample_id() const;
+            std::string csv_collection_day() const;
+            std::string csv_collection_month() const;
+            std::string csv_collection_year() const;
+            std::string csv_species() const;
+            std::string csv_age() const;
+            std::string csv_sex() const;
+            std::string csv_ring_number() const;
+            std::string csv_host_identifier() const;
+            std::string csv_host_species() const;
+            std::string csv_host_common_name() const;
+            std::string csv_health() const;
+            std::string csv_capture_method_status() const;
+            std::string csv_behavior() const;
+            std::string csv_location() const;
+            std::string csv_province() const;
+            std::string csv_country() const;
+            std::string csv_latitude() const;
+            std::string csv_longitude() const;
+            std::string csv_sample_material() const;
+            std::string csv_test_for_influenza_virus() const;
+            std::string csv_day_of_testing() const;
+            std::string csv_month_of_testing() const;
+            std::string csv_year_of_testing() const;
+            std::string csv_pool_id() const;
+            std::string csv_influenza_test_result() const;
+            std::string csv_ma_ct_value() const;
+            std::string csv_h5_status() const;
+            std::string csv_h5_ct_value() const;
+            std::string csv_h5_pathotype() const;
+            std::string csv_h7_status() const;
+            std::string csv_h7_ct_value() const;
+            std::string csv_h7_pathotype() const;
+            std::string csv_h9_status() const;
+            std::string csv_h9_ct_value() const;
+            std::string csv_emc_id() const;
+            std::string csv_ahvla_id() const;
+            std::string csv_first_egg_passage() const;
+            std::string csv_second_egg_passage() const;
+            std::string csv_passage_isolation() const;
+            std::string csv_virus_pathotype() const;
+            std::string csv_haemagglutinin_subtype() const;
+            std::string csv_neuraminidase_subtype() const;
+            std::string csv_serology_sample_id() const;
+            std::string csv_serology_testing_day() const;
+            std::string csv_serology_testing_month() const;
+            std::string csv_serology_testing_year() const;
+            std::string csv_serology_status() const;
+            std::string csv_record_id() const;
 
             static std::string new_record_id();
 
