@@ -117,10 +117,8 @@ void dtra::v2::Sheet::read(const char* filename)
 
 void dtra::v2::Sheet::write(const char* filename) const
 {
+      // std::cerr << "DEBUG: write\n";
     auto ws = workbook_.active_sheet();
-    // erase all cells except header (first two rows)
-    for (xlnt::row_t row = 3; row <= ws.highest_row(); ++row)
-        ws.clear_row(row);
 
       // column fillers
     std::map<xlnt::column_t, field_exporter_t> exporters;
@@ -138,18 +136,34 @@ void dtra::v2::Sheet::write(const char* filename) const
 
     ws.cell("AW2").value(dtra::Record::new_record_id());
 
-      // fill in rows
-    ws.reserve(records_.size() + 2);
-
-    auto current_cell = xlnt::cell_reference("A3");
-    for (const auto& record : records_) {
-        for (xlnt::column_t col = 1; col <= ws.highest_column(); ++col) {
-            current_cell.column_index(col);
-            auto cell = ws.cell(current_cell);
-            std::invoke(exporters[col], record, cell);
-        }
-        current_cell.row(current_cell.row() + 1);
+    if ((ws.highest_row() - 2) < records_.size()) {
+          // reserve rows
+        ws.reserve(records_.size() + 2);
+        for (auto row = ws.highest_row() + 1; row < (records_.size() + 3); ++row)
+            ws.cell("A", row).value("");
     }
+    else {
+          // clear redundant rows
+        for (xlnt::row_t row = static_cast<xlnt::row_t>(records_.size()) + 3; row <= ws.highest_row(); ++row)
+            ws.clear_row(row);
+    }
+    // std::cerr << "DEBUG: records " << records_.size() << " rows " << (ws.highest_row() - 2) << '\n';
+
+      // fill in rows
+    auto rows = ws.rows(false);
+    auto row = rows.begin();
+    ++row;                      // skipe header
+    ++row;
+    size_t record_no = 0;
+    for (; row != rows.end() && record_no < records_.size(); ++row, ++record_no) {
+        const auto& record = records_[record_no];
+        for (auto cell : *row) {
+            // std::cerr << cell.reference().row() << ' ' << cell.reference().column().index << '\n';
+            std::invoke(exporters[cell.reference().column()], record, cell);
+        }
+    }
+    std::cerr << "DEBUG: rows written " << record_no << '\n';
+
     std::cout << "Writing " << filename << '\n';
     workbook_.save(filename);
 
@@ -159,6 +173,9 @@ void dtra::v2::Sheet::write(const char* filename) const
 
 void dtra::v2::Sheet::merge(const Sheet& merge_in)
 {
+    for (const auto& rec : merge_in.records_) {
+        records_.push_back(rec);
+    }
 
 } // dtra::v2::Sheet::merge
 

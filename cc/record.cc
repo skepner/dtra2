@@ -176,7 +176,8 @@ void dtra::v2::Record::update_locations(const Directory& locations, std::vector<
             const double expected = loc_data[field_name];
             if (field.empty())
                 field = expected;
-            else if (!float_equal(static_cast<double>(field), expected))
+              //else if (!float_equal(static_cast<double>(field), expected))
+            else if (std::abs(static_cast<double>(field) - expected) > 1e-6)
                 throw std::runtime_error(string::concat("invalid ", field_name, " (", field, ") for ", location_, " (expected: ", expected, "), please leave Province, Country, Latitude, Longitude fields empty to allow system to fill them with the correct content"));
         };
 
@@ -196,13 +197,15 @@ void dtra::v2::Record::update_locations(const Directory& locations, std::vector<
 // Nic 2015-02-10: If 'domesticus' in the species field please
 // autofill behavior as D, All other species entries please autofill
 // behavior as W
-void dtra::v2::Record::update_behavior(std::vector<std::string>& reports)
+void dtra::v2::Record::update_behavior(std::vector<std::string>& /*reports*/)
 {
     const bool domesticus = host_species_.find("domesticus") != std::string::npos;
     if (behavior_.empty())
         behavior_ = domesticus ? "D" : "W";
-    else if ((domesticus && behavior_ != "D") || (!domesticus && behavior_ != "W"))
-        reports.push_back(string::concat("host species ", host_species_, " does not correspond to behavior ", behavior_));
+    else if ((domesticus && behavior_ != "D") || (!domesticus && behavior_ != "W")) {
+        std::cerr << "WARNING: " << string::concat("host species ", host_species_, " does not correspond to behavior ", behavior_) << '\n';
+      // reports.push_back(string::concat("host species ", host_species_, " does not correspond to behavior ", behavior_));
+    }
 
 } // dtra::v2::Record::update_behavior
 
