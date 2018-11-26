@@ -136,8 +136,11 @@ void dtra::v2::Sheet::write(const char* filename) const
         }
     }
 
+    ws.cell("AW2").value(dtra::Record::new_record_id());
+
       // fill in rows
     ws.reserve(records_.size() + 2);
+
     auto current_cell = xlnt::cell_reference("A3");
     for (const auto& record : records_) {
         for (xlnt::column_t col = 1; col <= ws.highest_column(); ++col) {
@@ -146,7 +149,6 @@ void dtra::v2::Sheet::write(const char* filename) const
             std::invoke(exporters[col], record, cell);
         }
         current_cell.row(current_cell.row() + 1);
-          // current_cell.column_index("A");
     }
     std::cout << "Writing " << filename << '\n';
     workbook_.save(filename);

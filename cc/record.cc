@@ -1,4 +1,7 @@
 #include <iostream>
+#include <sstream>
+#include <chrono>
+
 #include "xlnt.hh"
 #include "float.hh"
 #include "record.hh"
@@ -597,12 +600,37 @@ void dtra::v2::Record::set_record_id(const xlnt::cell& cell)
 
 // ----------------------------------------------------------------------
 
+#pragma GCC diagnostic push
+#ifdef __clang__
+#pragma GCC diagnostic ignored "-Wexit-time-destructors"
+#pragma GCC diagnostic ignored "-Wglobal-constructors"
+#endif
+
+std::string dtra::v2::Record::new_record_id_;
+
+#pragma GCC diagnostic pop
+
+std::string dtra::v2::Record::new_record_id()
+{
+    if (new_record_id_.empty()) {
+        const auto now = std::chrono::system_clock::now();
+        const auto in_time_t = std::chrono::system_clock::to_time_t(now);
+        std::stringstream ss;
+        ss << std::put_time(std::gmtime(&in_time_t), "%Y-%m-%d-%H-%M-%S");
+        new_record_id_ = ss.str();
+    }
+    return new_record_id_;
+
+} // dtra::v2::Record::new_record_id
+
+// ----------------------------------------------------------------------
+
 void dtra::v2::Record::get_record_id(xlnt::cell& cell) const
 {
     if (!record_id_.empty())
         cell.value(record_id_);
     else
-        cell.value(record_id_);
+        cell.value(new_record_id());
 
 } // dtra::v2::Record::get_record_id
 

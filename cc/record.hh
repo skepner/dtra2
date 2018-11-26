@@ -127,8 +127,7 @@ namespace dtra
             void get_serology_status(xlnt::cell& cell) const;
             void get_record_id(xlnt::cell& cell) const;
 
-            const auto& sample_id() const { return sample_id_; }
-            const auto& latitude() const { return latitude_; }
+            static std::string new_record_id();
 
          private:
             static constexpr const char* re_sample_id = "^(217|DT)-[0-9]+$";
@@ -141,6 +140,7 @@ namespace dtra
             static constexpr const char* pathotype_message = "expected: LPAI or HPAI";
             static constexpr const char* re_egg_passage = "^(0|1)$";
             static constexpr const char* egg_passage_message = "expected: 0 or 1";
+            static std::string new_record_id_;
 
             field::Uppercase sample_id_{re_sample_id, sample_id_message, field::can_be_empty::no};
             field::Date      collection_date_{field::can_be_empty::no};
