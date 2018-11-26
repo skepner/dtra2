@@ -82,10 +82,11 @@ void dtra::v2::Sheet::read(const char* filename)
     const auto ws = workbook_.active_sheet();
     if (ws.cell(1, 1).value<std::string>() != "DTRA version 2")
         throw std::runtime_error("\"DTRA version 2\" not found in cell A1");
-    std::cerr << "DEBUG: rows:" << ws.highest_row() << " columns:" << ws.highest_column().column_string() << '\n';
+    const auto highest_column = ws.highest_column();
+    std::cerr << "DEBUG: rows:" << ws.highest_row() << " columns:" << highest_column.column_string() << '\n';
 
     std::map<xlnt::column_t, field_importer_t> importers;
-    for (xlnt::column_t col = 1; col <= ws.highest_column(); ++col) {
+    for (xlnt::column_t col = 1; col <= highest_column; ++col) {
         const auto label = ws.cell(col, 2).value<std::string>();
         if (const auto found = name_to_importer.find(label); found != name_to_importer.end()) {
             importers[col] = std::get<field_importer_t>(found->second);
@@ -123,10 +124,11 @@ void dtra::v2::Sheet::write(const char* filename) const
 {
       // std::cerr << "DEBUG: write\n";
     auto ws = workbook_.active_sheet();
+    const auto highest_column = ws.highest_column();
 
       // column fillers
     std::map<xlnt::column_t, field_exporter_t> exporters;
-    for (xlnt::column_t col = 1; col <= ws.highest_column(); ++col) {
+    for (xlnt::column_t col = 1; col <= highest_column; ++col) {
         const auto label = ws.cell(col, 2).value<std::string>();
         if (const auto found = name_to_importer.find(label); found != name_to_importer.end())
             exporters[col] = std::get<field_exporter_t>(found->second);
@@ -140,18 +142,19 @@ void dtra::v2::Sheet::write(const char* filename) const
 
     ws.cell("AW2").value(dtra::Record::new_record_id());
 
-    if ((ws.highest_row() - 2) < records_.size()) {
+    const auto highest_row = ws.highest_row();
+    if ((highest_row - 2) < records_.size()) {
           // reserve rows
         ws.reserve(records_.size() + 2);
-        for (auto row = ws.highest_row() + 1; row < (records_.size() + 3); ++row)
+        for (auto row = highest_row + 1; row < (records_.size() + 3); ++row)
             ws.cell("A", row).value("");
     }
     else {
           // clear redundant rows
-        for (xlnt::row_t row = static_cast<xlnt::row_t>(records_.size()) + 3; row <= ws.highest_row(); ++row)
+        for (xlnt::row_t row = static_cast<xlnt::row_t>(records_.size()) + 3; row <= highest_row; ++row)
             ws.clear_row(row);
     }
-    // std::cerr << "DEBUG: records " << records_.size() << " rows " << (ws.highest_row() - 2) << '\n';
+    // std::cerr << "DEBUG: records " << records_.size() << " rows " << (highest_row - 2) << '\n';
 
       // fill in rows
     auto rows = ws.rows(false);
@@ -189,35 +192,40 @@ void dtra::v2::Sheet::write_csv(const char* filename) const
 {
     acmacs::CsvWriter csv;
 
-    auto ws = workbook_.active_sheet();
-    for (xlnt::column_t col = 1; col <= ws.highest_column(); ++col)
-        csv.add_field(ws.cell(col, 1).value<std::string>());
+    const auto ws = workbook_.active_sheet();
+    const auto highest_column = ws.highest_column();
+    for (xlnt::column_t col = 1; col <= highest_column; ++col) {
+        if (const xlnt::cell_reference cr(col, 1); ws.has_cell(cr))
+            csv.add_field(ws.cell(cr).value<std::string>());
+        else
+            csv.add_empty_field();
+    }
     csv.new_row();
       // column fillers
-    std::map<xlnt::column_t, csv_exporter_t> exporters;
-    for (xlnt::column_t col = 1; col <= ws.highest_column(); ++col) {
+    std::map<unsigned, csv_exporter_t> exporters;
+    for (xlnt::column_t col = 1; col <= highest_column; ++col) {
         const auto label = ws.cell(col, 2).value<std::string>();
         csv.add_field(label);
         if (const auto found = name_to_importer.find(label); found != name_to_importer.end())
-            exporters[col] = std::get<csv_exporter_t>(found->second);
+            exporters[col.index] = std::get<csv_exporter_t>(found->second);
         else if (std::regex_match(label, std::regex{"^20[12][0-9]-[01][0-9]-[0-3][0-9]-[0-2][0-9]-[0-5][0-9]-[0-5][0-9]$"})) // sheet id
-            exporters[col] = &Record::csv_record_id;
+            exporters[col.index] = &Record::csv_record_id;
         else {
-            std::cerr << "WARNING: unrecognized column label " << col.column_string() << " [" << label << "]\n";
-            exporters[col] = &Record::csv_exporter_default;
+            std::cerr << "WARNING: unrecognized column label " << col.index << " [" << label << "]\n";
+            exporters[col.index] = &Record::csv_exporter_default;
         }
     }
     csv.new_row();
 
     for (const auto& record : records_) {
-        for (xlnt::column_t col = 1; col <= ws.highest_column(); ++col)
+        for (size_t col = 1; col <= highest_column.index; ++col)
             csv.add_field(std::invoke(exporters[col], record));
         csv.new_row();
     }
 
     std::ofstream output(filename);
     const std::string_view data = csv;
-    output.write(data.data(), data.size());
+    output.write(data.data(), static_cast<long>(data.size()));
 
 } // dtra::v2::Sheet::write_csv
 
