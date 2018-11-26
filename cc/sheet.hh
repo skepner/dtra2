@@ -30,6 +30,8 @@ namespace dtra
             std::string report_; // empty, if there are no errors
             const Directory& locations_;
             const Directory& birds_;
+
+            Record* find(const field::Uppercase& sample_id);
         };
     }
 }

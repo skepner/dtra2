@@ -25,6 +25,8 @@ namespace dtra
                     const auto now_c = std::chrono::system_clock::to_time_t(now);
                     now_ = *std::localtime(&now_c);
                 }
+                Date(const Date& source) = default;
+                Date& operator=(const Date& source) = default;
 
                 bool operator==(const Date& rhs) const { return year_ == rhs.year_ && month_ == rhs.month_ && day_ == rhs.day_; }
                 bool operator!=(const Date& rhs) const { return !operator==(rhs); }
@@ -47,11 +49,14 @@ namespace dtra
                 int day() const { return static_cast<int>(day_); }
 
               private:
-                const can_be_empty can_be_empty_ = can_be_empty::yes;
+                can_be_empty can_be_empty_ = can_be_empty::yes;
                 size_t day_ = 0, month_ = 0, year_ = 0;
                 std::tm now_;
                 mutable std::vector<std::string> errors_;
             };
+
+            inline std::string to_string(const Date& field) { return field.to_string(); }
+
         } // namespace field
     }     // namespace v2
 } // namespace dtra

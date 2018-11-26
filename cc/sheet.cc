@@ -181,10 +181,27 @@ void dtra::v2::Sheet::write(const char* filename) const
 void dtra::v2::Sheet::merge(const Sheet& merge_in)
 {
     for (const auto& rec : merge_in.records_) {
-        records_.push_back(rec);
+        if (auto* target = find(rec.sample_id()); target) {
+            const auto report = target->merge(rec);
+            report_ = string::join("\n", {report_, report});
+        }
+        else {
+            records_.push_back(rec);
+        }
     }
 
 } // dtra::v2::Sheet::merge
+
+// ----------------------------------------------------------------------
+
+dtra::v2::Record* dtra::v2::Sheet::find(const dtra::v2::field::Uppercase& sample_id)
+{
+    for (auto& rec : records_)
+        if (rec.sample_id() == sample_id)
+            return &rec;
+    return nullptr;
+
+} // dtra::v2::Sheet::find
 
 // ----------------------------------------------------------------------
 
@@ -219,7 +236,7 @@ void dtra::v2::Sheet::write_csv(const char* filename) const
 
     for (const auto& record : records_) {
         for (size_t col = 1; col <= highest_column.index; ++col)
-            csv.add_field(std::invoke(exporters[col], record));
+            csv.add_field(std::invoke(exporters[static_cast<unsigned>(col)], record));
         csv.new_row();
     }
 

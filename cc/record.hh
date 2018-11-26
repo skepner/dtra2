@@ -27,6 +27,7 @@ namespace dtra
             std::string csv_exporter_default() const { return {}; }
 
             std::string validate(const Directory& locations, const Directory& birds);
+            std::string merge(const Record& rec);
 
             void set_sample_id(const xlnt::cell& cell);
             void set_collection_day(const xlnt::cell& cell);
@@ -179,6 +180,7 @@ namespace dtra
             std::string csv_record_id() const;
 
             static std::string new_record_id();
+            const auto& sample_id() const { return sample_id_; }
 
          private:
             static constexpr const char* re_sample_id = "^(217|DT)-[0-9]+$";
