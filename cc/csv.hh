@@ -30,6 +30,8 @@ namespace acmacs
             mData.append(aField);
         }
 
+        void add_field() { add_empty_field(); }
+
         void add_empty_field()
         {
             if (!mData.empty() && mData.back() != '\n')

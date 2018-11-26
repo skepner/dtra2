@@ -1,6 +1,7 @@
 #include <map>
 #include <regex>
 #include <tuple>
+#include <array>
 #include <fstream>
 
 #include "sheet.hh"
@@ -327,6 +328,137 @@ void dtra::v2::Sheet::write_csv(const char* filename) const
 
 // ----------------------------------------------------------------------
 
+std::array ceirs_titles{"Project_Identifier",
+                        "Contributing_Institution",
+                        "Sample_Identifier",
+                        "Embargo_End_Date",
+                        "Sample_Material",
+                        "Sample_Transport_Medium",
+                        "Sample_Receipt_Date",
+                        "Strain_Name",
+                        "Host_Species",
+                        "Host_Common_Name",
+                        "Host_Identifier",
+                        "Host_ID_Type",
+                        "Host_Capture_Status",
+                        "Host_Health",
+                        "Host_Natural_State",
+                        "Host_Habitat",
+                        "Host_Sex",
+                        "Host_Age",
+                        "Collector_Name",
+                        "Collection_Date",
+                        "Collection_Country",
+                        "Collection_State_Province",
+                        "Collection_City",
+                        "Collection_POI",
+                        "Collection_Latitude",
+                        "Collection_Longitude",
+                        "Influenza_Test_Type",
+                        "Influenza_Test_Result",
+                        "Influenza_Test_Interpretation",
+                        "Other_Pathogens_Tested",
+                        "Other_Pathogen_Test_Result",
+                        "Comments"};
+
+void dtra::v2::Sheet::write_ceirs(const char* filename, std::string first_date, std::string last_date) const
+{
+    acmacs::CsvWriter csv;
+    for (const auto& label : ceirs_titles)
+        csv.add_field(label);
+    csv.new_row();
+
+    // 2015-12-08
+    // For your surveillance, sequencing, and other data submission
+    // files, in the fields Sample_Identifier, Host_Identifier, and
+    // Virus_Identifier: Please do not use spaces or slashes "/",
+    // "\","|". Spaces are removed, slashes changed to dash "-".
+    auto fix_identifier = [](std::string text) -> std::string {
+        std::string result;
+        for (auto cc : text) {
+            if (!std::isspace(cc)) {
+                switch (cc) {
+                    case '/':
+                    case '\\':
+                    case '|':
+                        result.append(1, '-');
+                        break;
+                    default:
+                        result.append(1, cc);
+                        break;
+                }
+            }
+        }
+        return result;
+    };
+
+    const std::unordered_map<std::string, std::string> sample_material_data = {
+        {"TS", "TRS"},  // Tracheal swab
+        {"OP", "ORP"},  // Oral-pharyngeal
+        {"C", "CLO"},   // Cloacal
+        {"F", "FEC"},   // Feces
+        {"COP", "CCO"}, // Cloacal and oral-pharyngeal samples, when combined into one sample
+        {"B", "BLO"},   // Blood
+        {"SR", "SER"},  // Serum
+        {"TT", "TFT"},  // Tissue from trachea
+        {"CF", "CCF"},  // Cloacal and fecal samples, when combined into one sample
+        {"TB", "TFB"},  // Tissue from brain
+        {"TO", "OTT"},  // Other tissue
+        {"L", "LUN"},   // Lungs
+        {"S", "SOI"},   // Soil
+        {"W", "WAT"},   // Water
+        {"U", "U"},     // Unknown
+    };
+    auto sample_material = [&sample_material_data](const auto& record) -> std::string {
+        if (const auto found = sample_material_data.find(record.sample_material_); found != sample_material_data.end())
+            return found->second;
+        else if (!record.sample_material_.empty() && record.sample_material_.value()[0] == 'O')
+            return "OTH" + record.sample_material_.value().substr(1);
+        else
+            throw std::runtime_error(string::concat("Unsupported Smaple_Material", record.sample_material_.value(), " for ", record.sample_id_.value()));
+    };
+
+    for (const auto& record : records_) {
+        csv.add_field("SP1-Fouchier_5000");               // Project_Identifier
+        csv.add_field("CIP116");                          // "Contributing_Institution"
+        csv.add_field(fix_identifier(record.sample_id_)); // "Sample_Identifier"
+        csv.add_field("NA");                              // "Embargo_End_Date"
+        csv.add_field(sample_material(record));           // "Sample_Material"
+        csv.add_field("VTM");                             // "Sample_Transport_Medium"
+        csv.add_field();                                  // "Sample_Receipt_Date"
+        csv.add_field();                                  // "Strain_Name"
+        csv.add_field();                                  // "Host_Species"
+        csv.add_field();                                  // "Host_Common_Name"
+        csv.add_field();                                  // "Host_Identifier"
+        csv.add_field();                                  // "Host_ID_Type"
+        csv.add_field();                                  // "Host_Capture_Status"
+        csv.add_field();                                  // "Host_Health"
+        csv.add_field();                                  // "Host_Natural_State"
+        csv.add_field();                                  // "Host_Habitat"
+        csv.add_field();                                  // "Host_Sex"
+        csv.add_field();                                  // "Host_Age"
+        csv.add_field("Nicola Lewis");                    // "Collector_Name"
+        csv.add_field();                                  // "Collection_Date"
+        csv.add_field();                                  // "Collection_Country"
+        csv.add_field();                                  // "Collection_State_Province"
+        csv.add_field();                                  // "Collection_City"
+        csv.add_field();                                  // "Collection_POI"
+        csv.add_field();                                  // "Collection_Latitude"
+        csv.add_field();                                  // "Collection_Longitude"
+        csv.add_field();                                  // "Influenza_Test_Type"
+        csv.add_field();                                  // "Influenza_Test_Result"
+        csv.add_field();                                  // "Influenza_Test_Interpretation"
+        csv.add_field();                                  // "Other_Pathogens_Tested"
+        csv.add_field();                                  // "Other_Pathogen_Test_Result"
+        csv.add_field();                                  // "Comments"
+        csv.new_row();
+    }
+
+    std::ofstream output(filename);
+    const std::string_view data = csv;
+    output.write(data.data(), static_cast<long>(data.size()));
+
+} // dtra::v2::Sheet::write_ceirs
 
 // ----------------------------------------------------------------------
 /// Local Variables:

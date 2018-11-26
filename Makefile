@@ -3,6 +3,7 @@
 TARGETS = \
     $(DIST_DIR)/dtra2 \
     $(DIST_DIR)/dtra2-csv \
+    $(DIST_DIR)/dtra2-ceirs \
     $(DIST_DIR)/test-xlnt
 
 COMMON_SOURCES = \

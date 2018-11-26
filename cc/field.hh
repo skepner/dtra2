@@ -74,6 +74,7 @@ namespace dtra
                 Text& operator=(const Text& source) = default;
 
                 operator std::string() const { return value_; }
+                auto value() const { return value_; }
                 std::string to_string() const { return value_; }
                 std::string lower() const { return string::lower(value_); }
                 bool empty() const { return value_.empty(); }
@@ -97,7 +98,6 @@ namespace dtra
                 virtual void fix_on_assign() { string::strip_in_place(value_); }
                 auto begin() { return value_.begin(); }
                 auto end() { return value_.end(); }
-                auto value() const { return value_; }
 
              private:
                 std::string value_;
