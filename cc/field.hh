@@ -101,6 +101,7 @@ namespace dtra
 
                 bool empty() const { return !value_; }
                 operator double() const { return *value_; }
+                std::string to_string() const { return empty() ? std::string{} : std::to_string(*value_); }
                 std::vector<std::string> validate() const;
 
              private:

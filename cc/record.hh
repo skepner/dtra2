@@ -23,6 +23,7 @@ namespace dtra
         {
           public:
             void importer_default(const xlnt::cell& cell);
+            void exporter_default(xlnt::cell& cell) const;
 
             std::string validate(const Directory& locations, const Directory& birds);
 
@@ -75,6 +76,56 @@ namespace dtra
             void set_serology_testing_year(const xlnt::cell& cell);
             void set_serology_status(const xlnt::cell& cell);
             void set_record_id(const xlnt::cell& cell);
+
+            void get_sample_id(xlnt::cell& cell) const;
+            void get_collection_day(xlnt::cell& cell) const;
+            void get_collection_month(xlnt::cell& cell) const;
+            void get_collection_year(xlnt::cell& cell) const;
+            void get_species(xlnt::cell& cell) const;
+            void get_age(xlnt::cell& cell) const;
+            void get_sex(xlnt::cell& cell) const;
+            void get_ring_number(xlnt::cell& cell) const;
+            void get_host_identifier(xlnt::cell& cell) const;
+            void get_host_species(xlnt::cell& cell) const;
+            void get_host_common_name(xlnt::cell& cell) const;
+            void get_health(xlnt::cell& cell) const;
+            void get_capture_method_status(xlnt::cell& cell) const;
+            void get_behavior(xlnt::cell& cell) const;
+            void get_location(xlnt::cell& cell) const;
+            void get_province(xlnt::cell& cell) const;
+            void get_country(xlnt::cell& cell) const;
+            void get_latitude(xlnt::cell& cell) const;
+            void get_longitude(xlnt::cell& cell) const;
+            void get_sample_material(xlnt::cell& cell) const;
+            void get_test_for_influenza_virus(xlnt::cell& cell) const;
+            void get_day_of_testing(xlnt::cell& cell) const;
+            void get_month_of_testing(xlnt::cell& cell) const;
+            void get_year_of_testing(xlnt::cell& cell) const;
+            void get_pool_id(xlnt::cell& cell) const;
+            void get_influenza_test_result(xlnt::cell& cell) const;
+            void get_ma_ct_value(xlnt::cell& cell) const;
+            void get_h5_status(xlnt::cell& cell) const;
+            void get_h5_ct_value(xlnt::cell& cell) const;
+            void get_h5_pathotype(xlnt::cell& cell) const;
+            void get_h7_status(xlnt::cell& cell) const;
+            void get_h7_ct_value(xlnt::cell& cell) const;
+            void get_h7_pathotype(xlnt::cell& cell) const;
+            void get_h9_status(xlnt::cell& cell) const;
+            void get_h9_ct_value(xlnt::cell& cell) const;
+            void get_emc_id(xlnt::cell& cell) const;
+            void get_ahvla_id(xlnt::cell& cell) const;
+            void get_first_egg_passage(xlnt::cell& cell) const;
+            void get_second_egg_passage(xlnt::cell& cell) const;
+            void get_passage_isolation(xlnt::cell& cell) const;
+            void get_virus_pathotype(xlnt::cell& cell) const;
+            void get_haemagglutinin_subtype(xlnt::cell& cell) const;
+            void get_neuraminidase_subtype(xlnt::cell& cell) const;
+            void get_serology_sample_id(xlnt::cell& cell) const;
+            void get_serology_testing_day(xlnt::cell& cell) const;
+            void get_serology_testing_month(xlnt::cell& cell) const;
+            void get_serology_testing_year(xlnt::cell& cell) const;
+            void get_serology_status(xlnt::cell& cell) const;
+            void get_record_id(xlnt::cell& cell) const;
 
             const auto& sample_id() const { return sample_id_; }
             const auto& latitude() const { return latitude_; }

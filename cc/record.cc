@@ -13,6 +13,14 @@ void dtra::v2::Record::importer_default(const xlnt::cell& /*cell*/)
 
 // ----------------------------------------------------------------------
 
+void dtra::v2::Record::exporter_default(xlnt::cell& cell) const
+{
+    cell.clear_value();
+
+} // dtra::v2::Record::exporter_default
+
+// ----------------------------------------------------------------------
+
 std::string dtra::v2::Record::validate(const Directory& locations, const Directory& birds)
 {
     // There are internal dependencies between fields of the record:
@@ -588,6 +596,293 @@ void dtra::v2::Record::set_record_id(const xlnt::cell& cell)
 } // dtra::v2::Record::set_record_id
 
 // ----------------------------------------------------------------------
+
+void dtra::v2::Record::get_record_id(xlnt::cell& cell) const
+{
+    if (!record_id_.empty())
+        cell.value(record_id_);
+    else
+        cell.value(record_id_);
+
+} // dtra::v2::Record::get_record_id
+
+// ----------------------------------------------------------------------
+
+void dtra::v2::Record::get_sample_id(xlnt::cell& cell) const
+{
+    cell.value(sample_id_);
+}
+
+void dtra::v2::Record::get_collection_day(xlnt::cell& cell) const
+{
+    if (!collection_date_.empty())
+        cell.value(collection_date_.day());
+    else
+        cell.clear_value();
+}
+
+void dtra::v2::Record::get_collection_month(xlnt::cell& cell) const
+{
+    if (!collection_date_.empty())
+        cell.value(collection_date_.month());
+    else
+        cell.clear_value();
+}
+
+void dtra::v2::Record::get_collection_year(xlnt::cell& cell) const
+{
+    if (!collection_date_.empty())
+        cell.value(collection_date_.year());
+    else
+        cell.clear_value();
+}
+
+void dtra::v2::Record::get_species(xlnt::cell& cell) const
+{
+    if (!species_.empty())
+        cell.value(species_);
+    else
+        cell.clear_value();
+}
+
+void dtra::v2::Record::get_age(xlnt::cell& cell) const
+{
+    cell.value(age_);
+}
+
+void dtra::v2::Record::get_sex(xlnt::cell& cell) const
+{
+    cell.value(sex_);
+}
+
+void dtra::v2::Record::get_ring_number(xlnt::cell& cell) const
+{
+    cell.value(ring_number_);
+}
+
+void dtra::v2::Record::get_host_identifier(xlnt::cell& cell) const
+{
+    cell.value(host_identifier_);
+}
+
+void dtra::v2::Record::get_host_species(xlnt::cell& cell) const
+{
+    cell.value(host_species_);
+}
+
+void dtra::v2::Record::get_host_common_name(xlnt::cell& cell) const
+{
+    cell.value(host_common_name_);
+}
+
+void dtra::v2::Record::get_health(xlnt::cell& cell) const
+{
+    cell.value(health_);
+}
+
+void dtra::v2::Record::get_capture_method_status(xlnt::cell& cell) const
+{
+    cell.value(capture_method_status_);
+}
+
+void dtra::v2::Record::get_behavior(xlnt::cell& cell) const
+{
+    cell.value(behavior_);
+}
+
+void dtra::v2::Record::get_location(xlnt::cell& cell) const
+{
+    cell.value(location_);
+}
+
+void dtra::v2::Record::get_province(xlnt::cell& cell) const
+{
+    cell.value(province_);
+}
+
+void dtra::v2::Record::get_country(xlnt::cell& cell) const
+{
+    cell.value(country_);
+}
+
+void dtra::v2::Record::get_latitude(xlnt::cell& cell) const
+{
+    if (!latitude_.empty())
+        cell.value(double(latitude_));
+    else
+        cell.clear_value();
+}
+
+void dtra::v2::Record::get_longitude(xlnt::cell& cell) const
+{
+    if (!longitude_.empty())
+        cell.value(double(longitude_));
+    else
+        cell.clear_value();
+}
+
+void dtra::v2::Record::get_sample_material(xlnt::cell& cell) const
+{
+    cell.value(sample_material_);
+}
+
+void dtra::v2::Record::get_test_for_influenza_virus(xlnt::cell& cell) const
+{
+    cell.value(test_for_influenza_virus_);
+}
+
+void dtra::v2::Record::get_day_of_testing(xlnt::cell& cell) const
+{
+    if (!date_of_testing_.empty())
+        cell.value(date_of_testing_.day());
+    else
+        cell.clear_value();
+}
+
+void dtra::v2::Record::get_month_of_testing(xlnt::cell& cell) const
+{
+    if (!date_of_testing_.empty())
+        cell.value(date_of_testing_.month());
+    else
+        cell.clear_value();
+}
+
+void dtra::v2::Record::get_year_of_testing(xlnt::cell& cell) const
+{
+    if (!date_of_testing_.empty())
+        cell.value(date_of_testing_.year());
+    else
+        cell.clear_value();
+}
+
+void dtra::v2::Record::get_pool_id(xlnt::cell& cell) const
+{
+    cell.value(pool_id_);
+}
+
+void dtra::v2::Record::get_influenza_test_result(xlnt::cell& cell) const
+{
+    cell.value(influenza_test_result_);
+}
+
+void dtra::v2::Record::get_ma_ct_value(xlnt::cell& cell) const
+{
+    cell.value(ma_ct_value_);
+}
+
+void dtra::v2::Record::get_h5_status(xlnt::cell& cell) const
+{
+    cell.value(h5_status_);
+}
+
+void dtra::v2::Record::get_h5_ct_value(xlnt::cell& cell) const
+{
+    cell.value(h5_ct_value_);
+}
+
+void dtra::v2::Record::get_h5_pathotype(xlnt::cell& cell) const
+{
+    cell.value(h5_pathotype_);
+}
+
+void dtra::v2::Record::get_h7_status(xlnt::cell& cell) const
+{
+    cell.value(h7_status_);
+}
+
+void dtra::v2::Record::get_h7_ct_value(xlnt::cell& cell) const
+{
+    cell.value(h7_ct_value_);
+}
+
+void dtra::v2::Record::get_h7_pathotype(xlnt::cell& cell) const
+{
+    cell.value(h7_pathotype_);
+}
+
+void dtra::v2::Record::get_h9_status(xlnt::cell& cell) const
+{
+    cell.value(h9_status_);
+}
+
+void dtra::v2::Record::get_h9_ct_value(xlnt::cell& cell) const
+{
+    cell.value(h9_ct_value_);
+}
+
+void dtra::v2::Record::get_emc_id(xlnt::cell& cell) const
+{
+    cell.value(emc_id_);
+}
+
+void dtra::v2::Record::get_ahvla_id(xlnt::cell& cell) const
+{
+    cell.value(ahvla_id_);
+}
+
+void dtra::v2::Record::get_first_egg_passage(xlnt::cell& cell) const
+{
+    cell.value(first_egg_passage_);
+}
+
+void dtra::v2::Record::get_second_egg_passage(xlnt::cell& cell) const
+{
+    cell.value(second_egg_passage_);
+}
+
+void dtra::v2::Record::get_passage_isolation(xlnt::cell& cell) const
+{
+    cell.value(passage_isolation_);
+}
+
+void dtra::v2::Record::get_virus_pathotype(xlnt::cell& cell) const
+{
+    cell.value(virus_pathotype_);
+}
+
+void dtra::v2::Record::get_haemagglutinin_subtype(xlnt::cell& cell) const
+{
+    cell.value(haemagglutinin_subtype_);
+}
+
+void dtra::v2::Record::get_neuraminidase_subtype(xlnt::cell& cell) const
+{
+    cell.value(neuraminidase_subtype_);
+}
+
+void dtra::v2::Record::get_serology_sample_id(xlnt::cell& cell) const
+{
+    cell.value(serology_sample_id_);
+}
+
+void dtra::v2::Record::get_serology_testing_day(xlnt::cell& cell) const
+{
+    if (!serology_testing_date_.empty())
+        cell.value(serology_testing_date_.day());
+    else
+        cell.clear_value();
+}
+
+void dtra::v2::Record::get_serology_testing_month(xlnt::cell& cell) const
+{
+    if (!serology_testing_date_.empty())
+        cell.value(serology_testing_date_.month());
+    else
+        cell.clear_value();
+}
+
+void dtra::v2::Record::get_serology_testing_year(xlnt::cell& cell) const
+{
+    if (!serology_testing_date_.empty())
+        cell.value(serology_testing_date_.year());
+    else
+        cell.clear_value();
+}
+
+void dtra::v2::Record::get_serology_status(xlnt::cell& cell) const
+{
+    cell.value(serology_status_);
+}
 
 // capture_method_status_
 // ----------------------

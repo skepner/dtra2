@@ -42,9 +42,9 @@ namespace dtra
                 std::vector<std::string> validate() const;
 
                 std::string to_string() const;
-                std::string year() const;
-                std::string month() const;
-                std::string day() const;
+                int year() const { return static_cast<int>(year_); }
+                int month() const { return static_cast<int>(month_); }
+                int day() const { return static_cast<int>(day_); }
 
               private:
                 const can_be_empty can_be_empty_ = can_be_empty::yes;
