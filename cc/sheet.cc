@@ -71,9 +71,20 @@ namespace dtra
             void to_cell(const dtra::Record& record, xlnt::cell& cell) const
             {
                 std::visit(
-                    [&record, &cell](auto&& pp) {
-                        if constexpr (std::is_same_v<std::decay_t<decltype(pp)>, field_ptr_t<dtra::field::Date>>)
-                            (record.*pp).to_cell(cell);
+                    [&record, &cell, this](auto&& pp) {
+                        if constexpr (std::is_same_v<std::decay_t<decltype(pp)>, field_ptr_t<dtra::field::Date>>) {
+                            switch (date_part_) {
+                                case date_part::year:
+                                    cell.value((record.*pp).year());
+                                    break;
+                                case date_part::month:
+                                    cell.value((record.*pp).month());
+                                    break;
+                                case date_part::day:
+                                    cell.value((record.*pp).day());
+                                    break;
+                            }
+                        }
                         else
                             (record.*pp).to_cell(cell);
                     },
