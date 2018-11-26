@@ -10,6 +10,10 @@
 
 // ----------------------------------------------------------------------
 
+namespace xlnt { class cell; }
+
+// ----------------------------------------------------------------------
+
 namespace dtra
 {
     inline namespace v2
@@ -18,57 +22,85 @@ namespace dtra
         {
             enum class can_be_empty { no, yes };
 
-            class Text : public std::string
+            class Field
+            {
+             public:
+                Field(can_be_empty cbe = can_be_empty::yes) : can_be_empty_{cbe} {}
+                Field(const Field&) = default;
+                virtual ~Field() = default;
+                Field& operator=(const Field&) = default;
+
+                virtual std::string csv_value() const = 0;
+                virtual void from_cell(const xlnt::cell& cell) = 0;
+                virtual void to_cell(xlnt::cell& cell) const = 0;
+
+             protected:
+                bool can_be_empty() const { return can_be_empty_ == can_be_empty::yes; }
+
+             private:
+                enum can_be_empty can_be_empty_;
+            };
+
+            class Text : public Field
             {
               public:
-                Text(can_be_empty cbe = can_be_empty::yes) : can_be_empty_{cbe} {}
+                Text(enum can_be_empty cbe = can_be_empty::yes) : Field(cbe) {}
                 Text(const Text&) = default;
                 Text(Text&&) = default;
-                virtual ~Text() = default;
                 Text& operator=(std::string_view source)
                 {
-                    std::string::operator=(source);
+                    value_ = source;
                     fix_on_assign();
                     return *this;
                 }
                 Text& operator=(const std::string& source)
                 {
-                    std::string::operator=(source);
+                    value_ = source;
                     fix_on_assign();
                     return *this;
                 }
                 Text& operator=(std::string&& source)
                 {
-                    std::string::operator=(std::move(source));
+                    value_ = std::move(source);
                     fix_on_assign();
                     return *this;
                 }
                 Text& operator=(const char* source)
                 {
-                    std::string::operator=(source);
+                    value_ = source;
                     fix_on_assign();
                     return *this;
                 }
-                Text& operator=(const Text& source)
-                {
-                    std::string::operator=(source);
-                    return *this;
-                }
+                Text& operator=(const Text& source) = default;
 
-                bool operator==(std::string_view rhs) const { return std::string_view(*this) == rhs; }
+                operator std::string() const { return value_; }
+                std::string to_string() const { return value_; }
+                std::string lower() const { return string::lower(value_); }
+                bool empty() const { return value_.empty(); }
+                void clear() { return value_.clear(); }
+                bool contains(const char *text) const { return value_.find(text) != std::string::npos; }
+
+                bool operator==(std::string_view rhs) const { return std::string_view(value_) == rhs; }
                 bool operator!=(std::string_view rhs) const { return !operator==(rhs); }
-                bool operator==(std::string rhs) const { return static_cast<const std::string&>(*this) == rhs; }
+                bool operator==(std::string rhs) const { return value_ == rhs; }
                 bool operator!=(std::string rhs) const { return !operator==(rhs); }
-                bool operator==(const char* rhs) const { return std::string_view(*this) == std::string_view(rhs); }
+                bool operator==(const char* rhs) const { return operator==(std::string_view(rhs)); }
                 bool operator!=(const char* rhs) const { return !operator==(rhs); }
+
+                std::string csv_value() const override { return value_; }
+                void from_cell(const xlnt::cell& cell) override;
+                void to_cell(xlnt::cell& cell) const override;
 
                 std::vector<std::string> validate() const;
 
               protected:
-                virtual void fix_on_assign() { string::strip_in_place(*this); }
+                virtual void fix_on_assign() { string::strip_in_place(value_); }
+                auto begin() { return value_.begin(); }
+                auto end() { return value_.end(); }
+                auto value() const { return value_; }
 
-              private:
-                const can_be_empty can_be_empty_ = can_be_empty::yes;
+             private:
+                std::string value_;
             };
 
               // ----------------------------------------------------------------------
@@ -77,7 +109,7 @@ namespace dtra
             {
               public:
                 using Text::Text;
-                Uppercase(const char* validation_regex, const char* error_message, can_be_empty cbe = can_be_empty::yes)
+                Uppercase(const char* validation_regex, const char* error_message, enum can_be_empty cbe = can_be_empty::yes)
                     : Text(cbe), re_validator_{validation_regex}, error_message_{error_message} {}
                 Uppercase(const Uppercase&) = default;
                 using Text::operator=;
@@ -103,7 +135,7 @@ namespace dtra
 
               // ----------------------------------------------------------------------
 
-            class Float
+            class Float : public Field
             {
              public:
                 Float() = default;
@@ -118,16 +150,20 @@ namespace dtra
                 bool empty() const { return !value_; }
                 operator double() const { return *value_; }
                 std::string to_string() const { return empty() ? std::string{} : std::to_string(*value_); }
+
+                std::string csv_value() const override { return to_string(); }
+                void from_cell(const xlnt::cell& cell) override;
+                void to_cell(xlnt::cell& cell) const override;
+
                 std::vector<std::string> validate() const;
 
              private:
                 std::optional<double> value_;
                 std::optional<double> min_, max_;
                 mutable std::vector<std::string> errors_;
-
             };
 
-            inline std::string to_string(const Text& field) { return field; }
+            inline std::string to_string(const Text& field) { return field.to_string(); }
             inline std::string to_string(const Float& field) { return field.to_string(); }
 
         } // namespace field

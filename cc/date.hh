@@ -16,10 +16,10 @@ namespace dtra
     {
         namespace field
         {
-            class Date
+            class Date : public Field
             {
               public:
-                Date(can_be_empty cbe = can_be_empty::yes) : can_be_empty_{cbe}
+                Date(enum can_be_empty cbe = can_be_empty::yes) : Field(cbe)
                 {
                     const auto now = std::chrono::system_clock::now();
                     const auto now_c = std::chrono::system_clock::to_time_t(now);
@@ -48,8 +48,11 @@ namespace dtra
                 int month() const { return static_cast<int>(month_); }
                 int day() const { return static_cast<int>(day_); }
 
+                std::string csv_value() const override { return to_string(); }
+                void from_cell(const xlnt::cell& /*cell*/) override {}
+                void to_cell(xlnt::cell& /*cell*/) const override {}
+
               private:
-                can_be_empty can_be_empty_ = can_be_empty::yes;
                 size_t day_ = 0, month_ = 0, year_ = 0;
                 std::tm now_;
                 mutable std::vector<std::string> errors_;

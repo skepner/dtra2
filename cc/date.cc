@@ -124,7 +124,7 @@ std::vector<std::string> dtra::v2::field::Date::validate() const
                     errors_.push_back(::string::concat("invalid day ", day_, " (future date)"));
             }
         }
-        else if (can_be_empty_ == can_be_empty::no)
+        else if (!can_be_empty())
             errors_.push_back("cannot be empty");
     }
     return errors_;
