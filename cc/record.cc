@@ -150,7 +150,50 @@ std::string dtra::v2::Record::merge(const dtra::v2::Record& rec)
 {
     std::vector<std::string> reports;
 
-    auto merge_field = [&reports,this](std::string field_name, auto& field, const auto& source) {
+    auto conflict = [&reports](std::string field_name, auto& field, const auto& source) {
+        reports.push_back(field_name + ": " + to_string(field) + " vs. " + to_string(source));
+    };
+
+    auto conflict_health = [&conflict,this](std::string field_name, auto& field, const auto& source) {
+        if (capture_method_status_ != "K" && (field == "H" || source == "H")) {
+            field = "H";
+            record_id_.clear();
+        }
+        else
+            conflict(field_name, field, source);
+    };
+
+      // prefer K over A for "capture method/capture status"
+    auto conflict_capture_method_status = [&conflict,this](std::string field_name, auto& field, const auto& source) {
+        if ((field == "K" && source == "A") || (field == "A" && source == "K")) {
+            field = "K";
+            record_id_.clear();
+        }
+        else
+            conflict(field_name, field, source);
+    };
+
+      // prefer A over U for "age"
+    auto conflict_age = [&conflict,this](std::string field_name, auto& field, const auto& source) {
+        if ((field == "A" && source == "U") || (field == "U" && source == "A")) {
+            field = "A";
+            record_id_.clear();
+        }
+        else
+            conflict(field_name, field, source);
+    };
+
+      // prefer most recent collection date
+    auto conflict_collection_date = [&conflict,this](std::string field_name, auto& field, const auto& source) {
+        if (field < source) {
+            field = source;
+            record_id_.clear();
+        }
+        else
+            conflict(field_name, field, source);
+    };
+
+    auto merge_field = [this](std::string field_name, auto& field, const auto& source, auto&& conflict_func) {
         if (field.empty()) {
             if (!source.empty()) {
                 field = source;
@@ -158,57 +201,56 @@ std::string dtra::v2::Record::merge(const dtra::v2::Record& rec)
             }
         }
         else if (!source.empty() && field != source) {
-            reports.push_back(field_name + ": " + to_string(field) + " vs. " + to_string(source));
+            conflict_func(field_name, field, source);
         }
         // else {
         //     reports.push_back(field_name + ": EQ " + to_string(field) + " vs. " + to_string(source));
         // }
     };
 
-    merge_field("Sample ID", sample_id_, rec.sample_id_);
-    // std::cerr << "Collection_date " << collection_date_.to_string() << ' ' << rec.collection_date_.to_string() << ' ' << (collection_date_ != rec.collection_date_) << ' ' << collection_date_.empty() << ' ' << rec.collection_date_.empty() << '\n';
-    merge_field("Collection Date", collection_date_, rec.collection_date_);
-    merge_field("Species", species_, rec.species_);
-    merge_field("Age", age_, rec.age_);
-    merge_field("Sex", sex_, rec.sex_);
-    merge_field("Ring #", ring_number_, rec.ring_number_);
-    merge_field("Host_identifier", host_identifier_, rec.host_identifier_);
-    merge_field("Host Species", host_species_, rec.host_species_);
-    merge_field("Host Common name", host_common_name_, rec.host_common_name_);
-    merge_field("Health", health_, rec.health_);
-    merge_field("Capture Method/Capture status", capture_method_status_, rec.capture_method_status_);
-    merge_field("Behavior", behavior_, rec.behavior_);
-    merge_field("Location", location_, rec.location_);
-    merge_field("Province", province_, rec.province_);
-    merge_field("Country", country_, rec.country_);
-    merge_field("Latitude", latitude_, rec.latitude_);
-    merge_field("Longitude", longitude_, rec.longitude_);
-    merge_field("Sample material", sample_material_, rec.sample_material_);
-    merge_field("Test for influenza virus", test_for_influenza_virus_, rec.test_for_influenza_virus_);
-    merge_field("Date of Testing", date_of_testing_, rec.date_of_testing_);
-    merge_field("Pool ID", pool_id_, rec.pool_id_);
-    merge_field("Influenza test result", influenza_test_result_, rec.influenza_test_result_);
-    merge_field("MA Ct Value", ma_ct_value_, rec.ma_ct_value_);
-    merge_field("H5 Status", h5_status_, rec.h5_status_);
-    merge_field("H5 Ct Value", h5_ct_value_, rec.h5_ct_value_);
-    merge_field("H5 Pathotype", h5_pathotype_, rec.h5_pathotype_);
-    merge_field("H7 Status", h7_status_, rec.h7_status_);
-    merge_field("H7 Ct Value", h7_ct_value_, rec.h7_ct_value_);
-    merge_field("H7 Pathotype", h7_pathotype_, rec.h7_pathotype_);
-    merge_field("H9 Status", h9_status_, rec.h9_status_);
-    merge_field("H9 Ct Value", h9_ct_value_, rec.h9_ct_value_);
-    merge_field("EMC ID", emc_id_, rec.emc_id_);
-    merge_field("AHVLA ID", ahvla_id_, rec.ahvla_id_);
-    merge_field("First Egg Passage", first_egg_passage_, rec.first_egg_passage_);
-    merge_field("Second Egg Passage", second_egg_passage_, rec.second_egg_passage_);
-    merge_field("Passage Isolation", passage_isolation_, rec.passage_isolation_);
-    merge_field("Virus Pathotype", virus_pathotype_, rec.virus_pathotype_);
-    merge_field("Haemagglutinin Subtype", haemagglutinin_subtype_, rec.haemagglutinin_subtype_);
-    merge_field("Neuraminidase Subtype", neuraminidase_subtype_, rec.neuraminidase_subtype_);
-    merge_field("Serology Sample ID", serology_sample_id_, rec.serology_sample_id_);
-    merge_field("Serology Testing Date", serology_testing_date_, rec.serology_testing_date_);
-    merge_field("Serology Status", serology_status_, rec.serology_status_);
-      // add("*record-id*"                  , record_id_);
+
+    merge_field("Sample ID", sample_id_, rec.sample_id_, conflict);
+    merge_field("Collection Date", collection_date_, rec.collection_date_, conflict_collection_date);
+    merge_field("Species", species_, rec.species_, conflict);
+    merge_field("Age", age_, rec.age_, conflict_age);
+    merge_field("Sex", sex_, rec.sex_, conflict);
+    merge_field("Ring #", ring_number_, rec.ring_number_, conflict);
+    merge_field("Host_identifier", host_identifier_, rec.host_identifier_, conflict);
+    merge_field("Host Species", host_species_, rec.host_species_, conflict);
+    merge_field("Host Common name", host_common_name_, rec.host_common_name_, conflict);
+    merge_field("Health", health_, rec.health_, conflict_health);
+    merge_field("Capture Method/Capture status", capture_method_status_, rec.capture_method_status_, conflict_capture_method_status);
+    merge_field("Behavior", behavior_, rec.behavior_, conflict);
+    merge_field("Location", location_, rec.location_, conflict);
+    merge_field("Province", province_, rec.province_, conflict);
+    merge_field("Country", country_, rec.country_, conflict);
+    merge_field("Latitude", latitude_, rec.latitude_, conflict);
+    merge_field("Longitude", longitude_, rec.longitude_, conflict);
+    merge_field("Sample material", sample_material_, rec.sample_material_, conflict);
+    merge_field("Test for influenza virus", test_for_influenza_virus_, rec.test_for_influenza_virus_, conflict);
+    merge_field("Date of Testing", date_of_testing_, rec.date_of_testing_, conflict);
+    merge_field("Pool ID", pool_id_, rec.pool_id_, conflict);
+    merge_field("Influenza test result", influenza_test_result_, rec.influenza_test_result_, conflict);
+    merge_field("MA Ct Value", ma_ct_value_, rec.ma_ct_value_, conflict);
+    merge_field("H5 Status", h5_status_, rec.h5_status_, conflict);
+    merge_field("H5 Ct Value", h5_ct_value_, rec.h5_ct_value_, conflict);
+    merge_field("H5 Pathotype", h5_pathotype_, rec.h5_pathotype_, conflict);
+    merge_field("H7 Status", h7_status_, rec.h7_status_, conflict);
+    merge_field("H7 Ct Value", h7_ct_value_, rec.h7_ct_value_, conflict);
+    merge_field("H7 Pathotype", h7_pathotype_, rec.h7_pathotype_, conflict);
+    merge_field("H9 Status", h9_status_, rec.h9_status_, conflict);
+    merge_field("H9 Ct Value", h9_ct_value_, rec.h9_ct_value_, conflict);
+    merge_field("EMC ID", emc_id_, rec.emc_id_, conflict);
+    merge_field("AHVLA ID", ahvla_id_, rec.ahvla_id_, conflict);
+    merge_field("First Egg Passage", first_egg_passage_, rec.first_egg_passage_, conflict);
+    merge_field("Second Egg Passage", second_egg_passage_, rec.second_egg_passage_, conflict);
+    merge_field("Passage Isolation", passage_isolation_, rec.passage_isolation_, conflict);
+    merge_field("Virus Pathotype", virus_pathotype_, rec.virus_pathotype_, conflict);
+    merge_field("Haemagglutinin Subtype", haemagglutinin_subtype_, rec.haemagglutinin_subtype_, conflict);
+    merge_field("Neuraminidase Subtype", neuraminidase_subtype_, rec.neuraminidase_subtype_, conflict);
+    merge_field("Serology Sample ID", serology_sample_id_, rec.serology_sample_id_, conflict);
+    merge_field("Serology Testing Date", serology_testing_date_, rec.serology_testing_date_, conflict);
+    merge_field("Serology Status", serology_status_, rec.serology_status_, conflict);
 
     if (reports.empty())
         return {};
