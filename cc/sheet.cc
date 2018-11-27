@@ -230,7 +230,7 @@ void dtra::v2::Sheet::read(const char* filename)
 void dtra::v2::Sheet::write(const char* filename) const
 {
     auto ws = workbook_.active_sheet();
-    const auto highest_column = ws.highest_column();
+      // const auto highest_column = ws.highest_column();
     const auto highest_row = ws.highest_row();
 
     ws.cell("AW2").value(dtra::Record::new_record_id());
@@ -415,7 +415,7 @@ void dtra::v2::Sheet::write_ceirs(const char* filename, std::string first_date, 
         else if (!record.sample_material_.empty() && record.sample_material_.value()[0] == 'O')
             return "OTH" + record.sample_material_.value().substr(1);
         else
-            throw std::runtime_error(string::concat("Unsupported Sample_Material", record.sample_material_.value(), " for ", record.sample_id_.value()));
+            throw std::runtime_error(string::concat("Unsupported Sample_Material ", record.sample_material_.value(), " for ", record.sample_id_.value()));
     };
 
     const std::array months{"", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
@@ -434,7 +434,7 @@ void dtra::v2::Sheet::write_ceirs(const char* filename, std::string first_date, 
         else if (!record.capture_method_status_.empty() && record.capture_method_status_.value().substr(0, 2) == "OT")
             return "OTH" + record.capture_method_status_.value().substr(2);
         else
-            throw std::runtime_error(string::concat("Unsupported Host_Capture_Status", record.capture_method_status_.value(), " for ", record.sample_id_.value()));
+            throw std::runtime_error(string::concat("Unsupported Host_Capture_Status ", record.capture_method_status_.value(), " for ", record.sample_id_.value()));
     };
 
     const std::unordered_map<std::string, std::string> host_health_data = {
@@ -443,10 +443,11 @@ void dtra::v2::Sheet::write_ceirs(const char* filename, std::string first_date, 
     auto host_health = [&host_health_data](const auto& record) -> std::string {
         if (record.capture_method_status_ == "O")
             return "DED";
-        if (const auto found = host_health_data.find(record.capture_method_status_); found != host_health_data.end())
+        if (const auto found = host_health_data.find(record.health_); found != host_health_data.end())
             return found->second;
         else
-            throw std::runtime_error(string::concat("Unsupported Host_Health", record.capture_method_status_.value(), " for ", record.sample_id_.value()));
+            throw std::runtime_error(
+                string::concat("Unsupported Host_Health ", record.health_.value(), " capture_method_status_:", record.capture_method_status_.value(), " for ", record.sample_id_.value()));
     };
 
     auto host_natural_state = [](const auto& record) -> std::string {
@@ -473,7 +474,7 @@ void dtra::v2::Sheet::write_ceirs(const char* filename, std::string first_date, 
         if (const auto found = host_age_data.find(record.age_); found != host_age_data.end())
             return found->second;
         else
-            throw std::runtime_error(string::concat("Unsupported Host_Age", record.age_.value(), " for ", record.sample_id_.value()));
+            throw std::runtime_error(string::concat("Unsupported Host_Age ", record.age_.value(), " for ", record.sample_id_.value()));
     };
 
     auto influenza_test_type = [](const auto& record) -> std::string {
@@ -506,45 +507,52 @@ void dtra::v2::Sheet::write_ceirs(const char* filename, std::string first_date, 
             return {};
     };
 
+    const field::Date first(first_date), last(last_date);
+    // std::cerr << "DEBUG: first " << first.to_string() << ' ' << last.to_string() << '\n';
+    size_t records_written = 0;
     for (const auto& record : records_) {
-        csv.add_field("SP1-Fouchier_5000");                     // Project_Identifier
-        csv.add_field("CIP116");                                // "Contributing_Institution"
-        csv.add_field(fix_identifier(record.sample_id_));       // "Sample_Identifier"
-        csv.add_field("NA");                                    // "Embargo_End_Date"
-        csv.add_field(sample_material(record));                 // "Sample_Material"
-        csv.add_field("VTM");                                   // "Sample_Transport_Medium"
-        csv.add_field(ceirs_date(record.collection_date_));     // "Sample_Receipt_Date"
-        csv.add_field("NA");                                    // "Strain_Name"
-        csv.add_field(record.host_species_);                    // "Host_Species"
-        csv.add_field(record.host_common_name_);                // "Host_Common_Name"
-        csv.add_field(fix_identifier(record.host_identifier_)); // "Host_Identifier"
-        csv.add_field("U");                                     // "Host_ID_Type"
-        csv.add_field(host_capture_status(record));             // "Host_Capture_Status"
-        csv.add_field(host_health(record));                     // "Host_Health"
-        csv.add_field(host_natural_state(record));              // "Host_Natural_State"
-        csv.add_field(host_habitat(record));                    // "Host_Habitat"
-        csv.add_field(record.sex_);                             // "Host_Sex"
-        csv.add_field(host_age(record));                        // "Host_Age"
-        csv.add_field("Nicola Lewis");                          // "Collector_Name"
-        csv.add_field(ceirs_date(record.collection_date_));     // "Collection_Date"
-        csv.add_field(record.country_);                         // "Collection_Country"
-        csv.add_field(record.province_);                        // "Collection_State_Province"
-        csv.add_field("NA");                                    // "Collection_City"
-        csv.add_field(record.location_);                        // "Collection_POI"
-        csv.add_field(record.latitude_.to_string());            // "Collection_Latitude"
-        csv.add_field(record.longitude_.to_string());           // "Collection_Longitude"
-        csv.add_field(influenza_test_type(record));             // "Influenza_Test_Type"
-        csv.add_field(influenza_test_result(record));           // "Influenza_Test_Result"
-        csv.add_field(influenza_test_interpretation(record));   // "Influenza_Test_Interpretation"
-        csv.add_field("None");                                  // "Other_Pathogens_Tested"
-        csv.add_field("U");                                     // "Other_Pathogen_Test_Result"
-        csv.add_field(ceirs_comment(record));                   // "Comments"
-        csv.new_row();
+        if ((first.empty() || record.collection_date_ >= first) && (last.empty() || record.collection_date_ < last)) {
+            csv.add_field("SP1-Fouchier_5000");                     // Project_Identifier
+            csv.add_field("CIP116");                                // "Contributing_Institution"
+            csv.add_field(fix_identifier(record.sample_id_));       // "Sample_Identifier"
+            csv.add_field("NA");                                    // "Embargo_End_Date"
+            csv.add_field(sample_material(record));                 // "Sample_Material"
+            csv.add_field("VTM");                                   // "Sample_Transport_Medium"
+            csv.add_field(ceirs_date(record.collection_date_));     // "Sample_Receipt_Date"
+            csv.add_field("NA");                                    // "Strain_Name"
+            csv.add_field(record.host_species_);                    // "Host_Species"
+            csv.add_field(record.host_common_name_);                // "Host_Common_Name"
+            csv.add_field(fix_identifier(record.host_identifier_)); // "Host_Identifier"
+            csv.add_field("U");                                     // "Host_ID_Type"
+            csv.add_field(host_capture_status(record));             // "Host_Capture_Status"
+            csv.add_field(host_health(record));                     // "Host_Health"
+            csv.add_field(host_natural_state(record));              // "Host_Natural_State"
+            csv.add_field(host_habitat(record));                    // "Host_Habitat"
+            csv.add_field(record.sex_);                             // "Host_Sex"
+            csv.add_field(host_age(record));                        // "Host_Age"
+            csv.add_field("Nicola Lewis");                          // "Collector_Name"
+            csv.add_field(ceirs_date(record.collection_date_));     // "Collection_Date"
+            csv.add_field(record.country_);                         // "Collection_Country"
+            csv.add_field(record.province_);                        // "Collection_State_Province"
+            csv.add_field("NA");                                    // "Collection_City"
+            csv.add_field(record.location_);                        // "Collection_POI"
+            csv.add_field(record.latitude_.to_string());            // "Collection_Latitude"
+            csv.add_field(record.longitude_.to_string());           // "Collection_Longitude"
+            csv.add_field(influenza_test_type(record));             // "Influenza_Test_Type"
+            csv.add_field(influenza_test_result(record));           // "Influenza_Test_Result"
+            csv.add_field(influenza_test_interpretation(record));   // "Influenza_Test_Interpretation"
+            csv.add_field("None");                                  // "Other_Pathogens_Tested"
+            csv.add_field("U");                                     // "Other_Pathogen_Test_Result"
+            csv.add_field(ceirs_comment(record));                   // "Comments"
+            csv.new_row();
+            ++records_written;
+        }
     }
 
     std::ofstream output(filename);
     const std::string_view data = csv;
     output.write(data.data(), static_cast<long>(data.size()));
+    std::cout << records_written << " records written to " << filename << '\n';
 
 } // dtra::v2::Sheet::write_ceirs
 

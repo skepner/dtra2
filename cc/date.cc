@@ -1,4 +1,18 @@
+#include <charconv>
 #include "date.hh"
+
+// ----------------------------------------------------------------------
+
+dtra::v2::field::Date::Date(const std::string source)
+    : dtra::v2::field::Field(can_be_empty::yes)
+{
+    if (auto result = std::from_chars(source.data(), source.data() + source.size(), year_); result.ec == std::errc{}) {
+        if (result = std::from_chars(result.ptr + 1, source.data() + source.size(), month_); result.ec == std::errc{}) {
+            std::from_chars(result.ptr + 1, source.data() + source.size(), day_);
+        }
+    }
+
+} // dtra::v2::field::Date::Date
 
 // ----------------------------------------------------------------------
 

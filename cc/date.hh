@@ -26,6 +26,7 @@ namespace dtra
                     now_ = *std::localtime(&now_c);
                 }
                 Date(const Date& source) = default;
+                Date(const std::string source);
                 Date& operator=(const Date& source) = default;
 
                 bool operator==(const Date& rhs) const { return year_ == rhs.year_ && month_ == rhs.month_ && day_ == rhs.day_; }
