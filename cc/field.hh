@@ -149,7 +149,7 @@ namespace dtra
 
                 bool empty() const { return !value_; }
                 operator double() const { return *value_; }
-                std::string to_string() const { return empty() ? std::string{} : std::to_string(*value_); }
+                std::string to_string() const;
 
                 std::string csv_value() const override { return to_string(); }
                 void from_cell(const xlnt::cell& cell) override;

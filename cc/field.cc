@@ -1,4 +1,5 @@
 #include <iostream>
+
 #include "string.hh"
 #include "field.hh"
 #include "xlnt.hh"
@@ -110,6 +111,17 @@ void dtra::v2::field::Float::to_cell(xlnt::cell& cell) const
 
 // ----------------------------------------------------------------------
 
+std::string dtra::v2::field::Float::to_string() const
+{
+    if (empty())
+        return {};
+    auto result = std::to_string(*value_);
+    if (result.find('.') != std::string::npos) { // remove trailing 0's
+        while (result.size() > 2 && result.back() == '0' && result[result.size() - 2] != '.')
+            result.resize(result.size() - 1 );
+    }
+    return result;
+}
 
 // ----------------------------------------------------------------------
 /// Local Variables:

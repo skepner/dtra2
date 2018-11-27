@@ -422,7 +422,8 @@ void dtra::v2::Sheet::write_ceirs(const char* filename, std::string first_date, 
     auto ceirs_date = [&months](const auto& date) -> std::string {
         if (date.empty())
             return "Unknown";
-        return string::concat(date.day(), '-', months[static_cast<size_t>(date.month())], '-', date.year());
+        const auto make_day = [](int day) -> std::string { return day < 10 ? ("0" + std::to_string(day)) : std::to_string(day); };
+        return string::concat(make_day(date.day()), '-', months[static_cast<size_t>(date.month())], '-', date.year());
     };
 
     const std::unordered_map<std::string, std::string> host_capture_status_data = {

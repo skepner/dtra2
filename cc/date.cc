@@ -67,42 +67,6 @@ std::string dtra::v2::field::Date::to_string() const
 
 // ----------------------------------------------------------------------
 
-// std::string dtra::v2::field::Date::year() const
-// {
-//     if (!year_)
-//         return {};
-//     return std::to_string(year_);
-//     // std::string result(4, ' ');
-//     // std::snprintf(result.data(), result.size(), "%04lu", year_);
-//     // return result;
-// }
-
-// // ----------------------------------------------------------------------
-
-// std::string dtra::v2::field::Date::month() const
-// {
-//     if (!month_)
-//         return {};
-//     return std::to_string(month_);
-//     // std::string result(4, ' ');
-//     // std::snprintf(result.data(), result.size(), "%02lu", month_);
-//     // return result;
-// }
-
-// // ----------------------------------------------------------------------
-
-// std::string dtra::v2::field::Date::day() const
-// {
-//     if (!day_)
-//         return {};
-//     return std::to_string(day_);
-//     // std::string result(4, ' ');
-//     // std::snprintf(result.data(), result.size(), "%02lu", day_);
-//     // return result;
-// }
-
-// ----------------------------------------------------------------------
-
 std::vector<std::string> dtra::v2::field::Date::validate() const
 {
     if (errors_.empty()) {
@@ -144,9 +108,6 @@ std::vector<std::string> dtra::v2::field::Date::validate() const
     return errors_;
 
 } // dtra::v2::field::Date::validate
-
-// ----------------------------------------------------------------------
-
 
 // ----------------------------------------------------------------------
 /// Local Variables:
