@@ -24,6 +24,15 @@ void dtra::v2::Record::exporter_default(xlnt::cell& cell) const
 
 // ----------------------------------------------------------------------
 
+void dtra::v2::Record::allow_zero_date(bool allow_zero_date)
+{
+    date_of_testing_.allow_zero_date(allow_zero_date);
+    serology_testing_date_.allow_zero_date(allow_zero_date);
+
+} // dtra::v2::Record::allow_zero_date
+
+// ----------------------------------------------------------------------
+
 std::string dtra::v2::Record::validate(const Directory& locations, const Directory& birds)
 {
     // There are internal dependencies between fields of the record:

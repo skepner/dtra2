@@ -53,9 +53,13 @@ namespace dtra
                 void from_cell(const xlnt::cell& /*cell*/) override {}
                 void to_cell(xlnt::cell& /*cell*/) const override {}
 
+                void allow_zero_date(bool allow_zero_date) { allow_zero_date_ = allow_zero_date; }
+                constexpr bool allow_zero_date() const { return allow_zero_date_; }
+
               private:
                 size_t day_ = 0, month_ = 0, year_ = 0;
                 std::tm now_;
+                bool allow_zero_date_ = false;
                 mutable std::vector<std::string> errors_;
             };
 

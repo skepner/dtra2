@@ -18,7 +18,8 @@ namespace dtra
         class Sheet
         {
           public:
-            Sheet(const Directory& locations, const Directory& birds, const char* filename) : locations_{locations}, birds_{birds} { read(filename); }
+            Sheet(const Directory& locations, const Directory& birds, const char* filename, bool allow_zero_date = false)
+                : locations_{locations}, birds_{birds}, allow_zero_date_{allow_zero_date} { read(filename); }
 
             void read(const char* filename);
             void write(const char* filename) const;
@@ -33,6 +34,7 @@ namespace dtra
             std::string report_; // empty, if there are no errors
             const Directory& locations_;
             const Directory& birds_;
+            const bool allow_zero_date_;
             std::unordered_map<unsigned, const dtra::Accessor*> accessors_;
 
             Record* find(const field::Uppercase& sample_id);

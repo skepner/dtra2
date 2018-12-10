@@ -20,7 +20,7 @@ void dtra::v2::field::Date::set_day(std::string day)
 {
     try {
         day_ = std::stoul(day);
-        if (day_ < 1 || day_ > 31)
+        if ((day_ < 1 || day_ > 31) && (!allow_zero_date_ || day_ != 0))
             errors_.push_back("invalid day: " + day);
     }
     catch (std::exception&) {
@@ -34,7 +34,7 @@ void dtra::v2::field::Date::set_month(std::string month)
 {
     try {
         month_ = std::stoul(month);
-        if (month_ < 1 || month_ > 12)
+        if ((month_ < 1 || month_ > 12) && (!allow_zero_date_ || month_ != 0))
             errors_.push_back("invalid month: " + month);
     }
     catch (std::exception&) {
@@ -48,7 +48,7 @@ void dtra::v2::field::Date::set_year(std::string year)
 {
     try {
         year_ = std::stoul(year);
-        if (year_ < 2000 || year_ > static_cast<size_t>(now_.tm_year + 1900))
+        if ((year_ < 2000 || year_ > static_cast<size_t>(now_.tm_year + 1900)) && (!allow_zero_date_ || year_ != 0))
             errors_.push_back("invalid year: " + year);
     }
     catch (std::exception&) {

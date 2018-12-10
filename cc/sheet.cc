@@ -86,13 +86,22 @@ namespace dtra
                         if constexpr (std::is_same_v<std::decay_t<decltype(pp)>, field_ptr_t<dtra::field::Date>>) {
                             switch (date_part_) {
                                 case date_part::year:
-                                    cell.value((record.*pp).year());
+                                    if (const auto year = (record.*pp).year(); year)
+                                        cell.value(year);
+                                    else
+                                        cell.clear_value();
                                     break;
                                 case date_part::month:
-                                    cell.value((record.*pp).month());
+                                    if (const auto month = (record.*pp).month(); month)
+                                        cell.value(month);
+                                    else
+                                        cell.clear_value();
                                     break;
                                 case date_part::day:
-                                    cell.value((record.*pp).day());
+                                    if (const auto day = (record.*pp).day(); day)
+                                        cell.value(day);
+                                    else
+                                        cell.clear_value();
                                     break;
                             }
                         }
@@ -213,14 +222,17 @@ void dtra::v2::Sheet::read(const char* filename)
     records_.resize(ws.highest_row() - 2);
     auto rows = ws.rows();
     auto row = rows.begin();
-    ++row;                      // skipe header
+    ++row;                      // skip header
     ++row;
     for (size_t record_no = 0; row != rows.end(); ++row, ++record_no) {
         auto& record = records_[record_no];
+        record.allow_zero_date(allow_zero_date_);
         for (const auto cell : *row)
             accessors_[cell.reference().column().index]->from_cell(record, cell);
         if (const auto report = record.validate(locations_, birds_); !report.empty())
             report_ = string::join("\n", {report_, report});
+        if (report_.size() > 5000)
+            break;
     }
 
 } // dtra::v2::Sheet::read

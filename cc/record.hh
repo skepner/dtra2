@@ -26,6 +26,7 @@ namespace dtra
             void exporter_default(xlnt::cell& cell) const;
             std::string csv_exporter_default() const { return {}; }
 
+            void allow_zero_date(bool allow_zero_date);
             std::string validate(const Directory& locations, const Directory& birds);
             std::string merge(const Record& rec);
 
