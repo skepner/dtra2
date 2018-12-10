@@ -245,6 +245,7 @@ void dtra::v2::Sheet::write(const char* filename) const
       // const auto highest_column = ws.highest_column();
     const auto highest_row = ws.highest_row();
 
+    std::cout << "ID=" << dtra::Record::new_record_id() << '\n';
     ws.cell("AW2").value(dtra::Record::new_record_id());
 
     if ((highest_row - 2) < records_.size()) {
