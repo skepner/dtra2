@@ -81,7 +81,7 @@ std::vector<std::string> dtra::v2::field::Date::validate() const
                 case 12:
                     break;
                 case 2:
-                    if (day_ > 28)
+                    if ((year_ % 4 && day_ > 28) || day_ > 29)
                         errors_.push_back(::string::concat("invalid day ", day_, " in month ", month_));
                     break;
                 case 4:

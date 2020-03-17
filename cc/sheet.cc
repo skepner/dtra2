@@ -188,6 +188,7 @@ void dtra::v2::Sheet::make_index(const xlnt::worksheet& worksheet)
         const auto highest_column = worksheet.highest_column();
         for (xlnt::column_t col = 1; col <= highest_column; ++col) {
             const auto label = worksheet.cell(col, 2).value<std::string>();
+            // std::cerr << col.index << ' ' << label << '\n';
             if (const auto found = name_to_accessor.find(label); found != name_to_accessor.end()) {
                 accessors_[col.index] = &found->second;
             }
@@ -197,7 +198,8 @@ void dtra::v2::Sheet::make_index(const xlnt::worksheet& worksheet)
             }
             else {
                 report_ = string::join("\n", {report_, string::concat("unrecognized column label ", col.column_string(), " [", label, ']')});
-                // std::cerr << "WARNING: unrecognized column label " << col.column_string() << " [" << label << "]\n";
+                std::cerr << "ERROR: unrecognized column label " << col.column_string() << " [" << label << "]\n";
+                throw std::runtime_error("Invalid column label");
             }
         }
     }
@@ -227,8 +229,11 @@ void dtra::v2::Sheet::read(const char* filename)
     for (size_t record_no = 0; row != rows.end(); ++row, ++record_no) {
         auto& record = records_[record_no];
         record.allow_zero_date(allow_zero_date_);
-        for (const auto cell : *row)
+        // std::cerr << "read row " << record_no << '\n';
+        for (const auto cell : *row) {
+            // std::cerr << "read cell " << cell.reference().column().index << ' ' << ws.cell(cell.reference()).value<std::string>() << " -- " << ws.cell(cell.reference()).value<double>() << '\n';
             accessors_[cell.reference().column().index]->from_cell(record, cell);
+        }
         if (const auto report = record.validate(locations_, birds_); !report.empty())
             report_ = string::join("\n", {report_, report});
         if (report_.size() > 5000)

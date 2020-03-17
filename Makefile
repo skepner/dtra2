@@ -11,21 +11,30 @@ COMMON_SOURCES = \
     field.cc date.cc \
     rjson.cc read-file.cc
 
-STD = c++17
-CXXFLAGS = -g -MMD $(OPTIMIZATION) $(PROFILE) -fPIC -std=$(STD) $(WARNINGS) -I$(XLNT_INCLUDE)
+STD = c++2a
+CXXFLAGS = -g -MMD -mmacosx-version-min=10.15 $(OPTIMIZATION) $(PROFILE) -fPIC -std=$(STD) $(WARNINGS) -I$(XLNT_INCLUDE)
 
 CXX_ROOT = /usr/local/opt/llvm
 CXX = $(CXX_ROOT)/bin/clang++
 CXX_TYPE = clang
-CXX_NAME = "clang++-7.0.0   "
-FS_LIB = -L$(CXX_ROOT)/lib -lc++fs
-CXX_LIB = -L$(CXX_ROOT)/lib -lc++ -lomp $(FS_LIB)
+CXX_NAME = $(shell $(CXX) --version | grep version | cut -d ' ' -f 3)
+# FS_LIB = -L$(CXX_ROOT)/lib -lc++fs
+CXX_LIB = -L$(CXX_ROOT)/lib -lc++ -lomp
 WARNINGS = -Wno-weak-vtables -Weverything -Wno-c++98-compat -Wno-c++98-compat-pedantic -Wno-padded
-OPTIMIZATION = -O3 -mavx -mtune=intel -DNDEBUG
+
+ifeq ($(DEBUG),1)
+  OPTIMIZATION = -O0 -fsanitize=address -fno-inline-functions
+  CXX_NAME += DEBUG
+else
+  OPTIMIZATION = -O3 -mavx -mtune=intel -DNDEBUG
+  CXX_NAME += OPT
+endif
+
 
 OUT_DIR = out
 DIST_DIR = dist
 LDLIBS = $(XLNT_LIB) $(CXX_LIB)
+LDFLAGS = $(CXXFLAGS)
 
 # --------------------------------------------------
 
@@ -62,11 +71,12 @@ cmake-installed:
 -include $(OUT_DIR)/*.d
 
 $(DIST_DIR)/%: $(OUT_DIR)/%.o $(patsubst %.cc,$(OUT_DIR)/%.o,$(COMMON_SOURCES)) | $(DIST_DIR) $(XLNT_LIB)
+	@echo $(LDFLAGS) -o $@ $(LDLIBS)
 	$(CXX) $(LDFLAGS) -o $@ $^ $(LDLIBS)
 
 # abspath below is to show full file path by __FILE__ macro used in logging
 $(OUT_DIR)/%.o: cc/%.cc | $(OUT_DIR)
-	@echo $(CXX_NAME) $(OPTIMIZATION) $<
+	@echo $(CXX_NAME) $(CXXFLAGS) $<
 	@$(CXX) $(CXXFLAGS) -c -o $@ $(abspath $<)
 
 clean:
