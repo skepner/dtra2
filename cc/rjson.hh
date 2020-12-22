@@ -128,7 +128,7 @@ namespace rjson
             size_t max_index() const { return content_.size() - 1; }
 
             value& append(value&& aValue); // returns ref to inserted
-            void replace(const array& to_replace) { content_.resize(to_replace.size()); std::copy(to_replace.content_.begin(), to_replace.content_.end(), content_.begin()); }
+            void replace(const array& to_replace);
             void remove(size_t index);
             void clear();
 
@@ -338,6 +338,12 @@ namespace rjson
         extern value ConstNull, EmptyArray, EmptyObject;
 
         // --------------------------------------------------
+
+        inline void array::replace(const array& to_replace)
+        {
+            content_.resize(to_replace.size());
+            std::copy(to_replace.content_.begin(), to_replace.content_.end(), content_.begin());
+        }
 
         inline const value& array::get(size_t index) const noexcept // if index out of range, returns ConstNull
         {

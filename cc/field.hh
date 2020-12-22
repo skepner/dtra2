@@ -82,11 +82,11 @@ namespace dtra
                 bool contains(const char *text) const { return value_.find(text) != std::string::npos; }
 
                 bool operator==(std::string_view rhs) const { return std::string_view(value_) == rhs; }
-                bool operator!=(std::string_view rhs) const { return !operator==(rhs); }
+                // bool operator!=(std::string_view rhs) const { return !operator==(rhs); }
                 bool operator==(std::string rhs) const { return value_ == rhs; }
-                bool operator!=(std::string rhs) const { return !operator==(rhs); }
+                // bool operator!=(std::string rhs) const { return !operator==(rhs); }
                 bool operator==(const char* rhs) const { return operator==(std::string_view(rhs)); }
-                bool operator!=(const char* rhs) const { return !operator==(rhs); }
+                // bool operator!=(const char* rhs) const { return !operator==(rhs); }
 
                 std::string csv_value() const override { return value_; }
                 void from_cell(const xlnt::cell& cell) override;

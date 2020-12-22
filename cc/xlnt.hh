@@ -7,6 +7,9 @@
 #pragma GCC diagnostic ignored "-Wdocumentation-unknown-command"
 #pragma GCC diagnostic ignored "-Wfloat-equal"
 #pragma GCC diagnostic ignored "-Wnewline-eof"
+#pragma GCC diagnostic ignored "-Wsuggest-destructor-override"
+// #pragma GCC diagnostic ignored ""
+// #pragma GCC diagnostic ignored ""
 #endif
 #include "xlnt/xlnt.hpp"
 #pragma GCC diagnostic pop

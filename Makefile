@@ -12,7 +12,7 @@ COMMON_SOURCES = \
     rjson.cc read-file.cc
 
 STD = c++2a
-CXXFLAGS = -g -MMD -mmacosx-version-min=10.15 $(OPTIMIZATION) $(PROFILE) -fPIC -std=$(STD) $(WARNINGS) -I$(XLNT_INCLUDE)
+CXXFLAGS = -g -MMD $(OPTIMIZATION) $(PROFILE) -fPIC -std=$(STD) $(WARNINGS) -I$(XLNT_INCLUDE)
 
 CXX_ROOT = /usr/local/opt/llvm
 CXX = $(CXX_ROOT)/bin/clang++
@@ -45,20 +45,23 @@ test: $(TARGETS)
 
 # -------------------- xlnt --------------------
 
-XLNT_RELEASE = 1.3.0
+XLNT_RELEASE = 1.5.0
 XLNT_LIB = xlnt-$(XLNT_RELEASE)/build/source/libxlnt.dylib
 XLNT_INCLUDE = xlnt-$(XLNT_RELEASE)/include
+XLNT_CXX_FLAGS = $(OPTIMIZATION)
+XLNT_CMAKE_CMD = cmake -D CMAKE_COLOR_MAKEFILE=OFF -D CMAKE_BUILD_TYPE=Release -D TESTS=OFF -D CMAKE_CXX_FLAGS_RELEASE="$(XLNT_CXX_FLAGS)" -D CMAKE_CXX_COMPILER="$(CXX)" ..
 
 xlnt: $(XLNT_LIB)
 
 $(XLNT_LIB): | xlnt-$(XLNT_RELEASE) cmake-installed
-	cd xlnt-$(XLNT_RELEASE) && mkdir -p build && ( cd build && cmake -D CMAKE_BUILD_TYPE=Release -D TESTS=OFF -D CMAKE_CXX_FLAGS_RELEASE="$(OPTIMIZATION)" -D CMAKE_CXX_COMPILER="$(CXX)" .. && $(MAKE) )
+	cd xlnt-$(XLNT_RELEASE) && mkdir -p build && cd build && $(XLNT_CMAKE_CMD) && $(MAKE)
 	test -x /usr/bin/install_name_tool && /usr/bin/install_name_tool -id $(abspath $(XLNT_LIB)) $(XLNT_LIB)
 
 xlnt-$(XLNT_RELEASE):
 	curl -OsL https://github.com/tfussell/xlnt/archive/v$(XLNT_RELEASE).tar.gz
 	tar xzf v$(XLNT_RELEASE).tar.gz
 	rm -f v$(XLNT_RELEASE).tar.gz
+	if [ -f xlnt-$(XLNT_RELEASE)/third-party/libstudxml/version ]; then mv xlnt-$(XLNT_RELEASE)/third-party/libstudxml/version xlnt-$(XLNT_RELEASE)/third-party/libstudxml/version.orig; fi
 
 # -------------------- utils --------------------
 
@@ -75,7 +78,7 @@ $(DIST_DIR)/%: $(OUT_DIR)/%.o $(patsubst %.cc,$(OUT_DIR)/%.o,$(COMMON_SOURCES)) 
 	$(CXX) $(LDFLAGS) -o $@ $^ $(LDLIBS)
 
 # abspath below is to show full file path by __FILE__ macro used in logging
-$(OUT_DIR)/%.o: cc/%.cc | $(OUT_DIR)
+$(OUT_DIR)/%.o: cc/%.cc | $(OUT_DIR) $(XLNT_LIB)
 	@echo $(CXX_NAME) $(CXXFLAGS) $<
 	@$(CXX) $(CXXFLAGS) -c -o $@ $(abspath $<)
 
