@@ -25,8 +25,9 @@ namespace dtra
             void write(const char* filename) const;
             void write_csv(const char* filename) const;
             void write_ceirs(const char* filename, std::string first_date, std::string last_date) const;
-            void merge(const Sheet& merge_in);
+            void merge(const Sheet& merge_in, bool resolve_conflict_with_merge_in);
             std::string report() const { return report_; }
+            bool unresolved_conflicts() const { return unresolved_conflicts_; }
 
           private:
             mutable xlnt::workbook workbook_;
@@ -36,6 +37,7 @@ namespace dtra
             const Directory& birds_;
             const bool allow_zero_date_;
             std::unordered_map<unsigned, const dtra::Accessor*> accessors_;
+            bool unresolved_conflicts_{false};
 
             Record* find(const field::Uppercase& sample_id);
             void make_index(const xlnt::worksheet& worksheet);

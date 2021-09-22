@@ -28,7 +28,7 @@ namespace dtra
 
             void allow_zero_date(bool allow_zero_date);
             std::string validate(const Directory& locations, const Directory& birds);
-            std::string merge(const Record& rec);
+            std::pair<std::string, bool> merge(const Record& rec, bool resolve_conflict_with_merge_in);
 
             static std::string new_record_id();
             void reset_record_id() { record_id_ = new_record_id(); }

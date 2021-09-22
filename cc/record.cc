@@ -155,54 +155,60 @@ void dtra::v2::Record::validate_hostspecies_commonname(const Directory& birds, s
 
 // ----------------------------------------------------------------------
 
-std::string dtra::v2::Record::merge(const dtra::v2::Record& rec)
+std::pair<std::string, bool> dtra::v2::Record::merge(const dtra::v2::Record& rec, bool resolve_conflict_with_merge_in)
 {
     std::vector<std::string> reports;
+    bool unresolved_conflicts = false;
 
-    auto conflict = [&reports](std::string field_name, auto& field, const auto& source) {
-        reports.push_back(field_name + ": " + to_string(field) + " vs. " + to_string(source));
+    auto conflict = [&reports, &unresolved_conflicts](std::string field_name, auto& field, const auto& source, bool resolved_with_merge_in) {
+        std::string msg = field_name + ": orig:" + to_string(field) + " vs. new:" + to_string(source);
+        if (resolved_with_merge_in)
+            msg += " <resolved with new>";
+        else
+            unresolved_conflicts = true;
+        reports.push_back(msg);
     };
 
-    auto conflict_health = [&conflict,this](std::string field_name, auto& field, const auto& source) {
+    auto conflict_health = [&conflict,this](std::string field_name, auto& field, const auto& source, bool resolved_with_merge_in) {
         if (capture_method_status_ != "K" && (field == "H" || source == "H")) {
             field = "H";
             record_id_ = new_record_id();
         }
         else
-            conflict(field_name, field, source);
+            conflict(field_name, field, source, resolved_with_merge_in);
     };
 
       // prefer K over A for "capture method/capture status"
-    auto conflict_capture_method_status = [&conflict,this](std::string field_name, auto& field, const auto& source) {
+    auto conflict_capture_method_status = [&conflict,this](std::string field_name, auto& field, const auto& source, bool resolved_with_merge_in) {
         if ((field == "K" && source == "A") || (field == "A" && source == "K")) {
             field = "K";
             record_id_ = new_record_id();
         }
         else
-            conflict(field_name, field, source);
+            conflict(field_name, field, source, resolved_with_merge_in);
     };
 
       // prefer A over U for "age"
-    auto conflict_age = [&conflict,this](std::string field_name, auto& field, const auto& source) {
+    auto conflict_age = [&conflict,this](std::string field_name, auto& field, const auto& source, bool resolved_with_merge_in) {
         if ((field == "A" && source == "U") || (field == "U" && source == "A")) {
             field = "A";
             record_id_ = new_record_id();
         }
         else
-            conflict(field_name, field, source);
+            conflict(field_name, field, source, resolved_with_merge_in);
     };
 
       // prefer most recent collection date
-    auto conflict_collection_date = [&conflict,this](std::string field_name, auto& field, const auto& source) {
+    auto conflict_collection_date = [&conflict,this](std::string field_name, auto& field, const auto& source, bool resolved_with_merge_in) {
         if (field < source) {
             field = source;
             record_id_ = new_record_id();
         }
         else
-            conflict(field_name, field, source);
+            conflict(field_name, field, source, resolved_with_merge_in);
     };
 
-    auto merge_field = [this](std::string field_name, auto& field, const auto& source, auto&& conflict_func) {
+    auto merge_field = [this, resolve_conflict_with_merge_in](std::string field_name, auto& field, const auto& source, auto&& conflict_func) {
         if (field.empty()) {
             if (!source.empty()) {
                 field = source;
@@ -210,7 +216,11 @@ std::string dtra::v2::Record::merge(const dtra::v2::Record& rec)
             }
         }
         else if (!source.empty() && field != source) {
-            conflict_func(field_name, field, source);
+            if (resolve_conflict_with_merge_in) {
+                field = source;
+                record_id_ = new_record_id();
+            }
+            conflict_func(field_name, field, source, resolve_conflict_with_merge_in);
         }
         // else {
         //     reports.push_back(field_name + ": EQ " + to_string(field) + " vs. " + to_string(source));
@@ -262,8 +272,9 @@ std::string dtra::v2::Record::merge(const dtra::v2::Record& rec)
     merge_field("Serology Status", serology_status_, rec.serology_status_, conflict);
 
     if (reports.empty())
-        return {};
-    return sample_id_.to_string() + ":\n  " + string::join("\n  ", reports);
+        return {{}, unresolved_conflicts};
+    else
+        return {sample_id_.to_string() + ":\n  " + string::join("\n  ", reports), unresolved_conflicts};
 
 } // dtra::v2::Record::merge
 

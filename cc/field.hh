@@ -81,6 +81,7 @@ namespace dtra
                 void clear() { return value_.clear(); }
                 bool contains(const char *text) const { return value_.find(text) != std::string::npos; }
 
+                bool operator==(const Text& rhs) const { return value() == rhs.value(); }
                 bool operator==(std::string_view rhs) const { return std::string_view(value_) == rhs; }
                 // bool operator!=(std::string_view rhs) const { return !operator==(rhs); }
                 bool operator==(std::string rhs) const { return value_ == rhs; }

@@ -11,7 +11,7 @@ COMMON_SOURCES = \
     field.cc date.cc \
     rjson.cc read-file.cc
 
-STD = c++2a
+STD = c++20
 CXXFLAGS = -g -MMD $(OPTIMIZATION) $(PROFILE) -fPIC -std=$(STD) $(WARNINGS) -I$(XLNT_INCLUDE)
 
 CXX_ROOT = /usr/local/opt/llvm
@@ -26,7 +26,7 @@ ifeq ($(DEBUG),1)
   OPTIMIZATION = -O0 -fsanitize=address -fno-inline-functions
   CXX_NAME += DEBUG
 else
-  OPTIMIZATION = -O3 -mavx -mtune=intel -DNDEBUG
+  OPTIMIZATION = -O3 -mavx -DNDEBUG
   CXX_NAME += OPT
 endif
 

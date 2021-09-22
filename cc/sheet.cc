@@ -286,12 +286,13 @@ void dtra::v2::Sheet::write(const char* filename) const
 
 // ----------------------------------------------------------------------
 
-void dtra::v2::Sheet::merge(const Sheet& merge_in)
+void dtra::v2::Sheet::merge(const Sheet& merge_in, bool resolve_conflict_with_merge_in)
 {
     for (const auto& rec : merge_in.records_) {
         if (auto* target = find(rec.sample_id_); target) {
-            const auto report = target->merge(rec);
+            const auto [report, unresolved_conflicts] = target->merge(rec, resolve_conflict_with_merge_in);
             report_ = string::join("\n", {report_, report});
+            unresolved_conflicts_ |= unresolved_conflicts;
         }
         else {
             records_.push_back(rec);
