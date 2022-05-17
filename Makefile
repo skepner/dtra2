@@ -14,7 +14,8 @@ COMMON_SOURCES = \
 STD = c++20
 CXXFLAGS = -g -MMD $(OPTIMIZATION) $(PROFILE) -fPIC -std=$(STD) $(WARNINGS) -I$(XLNT_INCLUDE)
 
-CXX_ROOT = /usr/local/opt/llvm
+BREW_PREFIX = $(shell brew --prefix)
+CXX_ROOT = $(BREW_PREFIX)/opt/llvm
 CXX = $(CXX_ROOT)/bin/clang++
 CXX_TYPE = clang
 CXX_NAME = $(shell $(CXX) --version | grep version | cut -d ' ' -f 3)
@@ -48,7 +49,7 @@ test: $(TARGETS)
 XLNT_RELEASE = 1.5.0
 XLNT_LIB = xlnt-$(XLNT_RELEASE)/build/source/libxlnt.dylib
 XLNT_INCLUDE = xlnt-$(XLNT_RELEASE)/include
-XLNT_CXX_FLAGS = $(OPTIMIZATION)
+XLNT_CXX_FLAGS = $(OPTIMIZATION) -Wno-suggest-destructor-override
 XLNT_CMAKE_CMD = cmake -D CMAKE_COLOR_MAKEFILE=OFF -D CMAKE_BUILD_TYPE=Release -D TESTS=OFF -D CMAKE_CXX_FLAGS_RELEASE="$(XLNT_CXX_FLAGS)" -D CMAKE_CXX_COMPILER="$(CXX)" ..
 
 xlnt: $(XLNT_LIB)
@@ -92,6 +93,3 @@ $(DIST_DIR):
 	mkdir -p $(DIST_DIR)
 
 # ======================================================================
-### Local Variables:
-### eval: (if (fboundp 'eu-rename-buffer) (eu-rename-buffer))
-### End:
