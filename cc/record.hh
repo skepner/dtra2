@@ -101,6 +101,3 @@ namespace dtra
 } // namespace dtra
 
 // ----------------------------------------------------------------------
-/// Local Variables:
-/// eval: (if (fboundp 'eu-rename-buffer) (eu-rename-buffer))
-/// End:

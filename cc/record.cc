@@ -402,6 +402,3 @@ std::string dtra::v2::Record::new_record_id()
 // U = Unknown
 
 // ----------------------------------------------------------------------
-/// Local Variables:
-/// eval: (if (fboundp 'eu-rename-buffer) (eu-rename-buffer))
-/// End:

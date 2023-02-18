@@ -110,6 +110,3 @@ std::vector<std::string> dtra::v2::field::Date::validate() const
 } // dtra::v2::field::Date::validate
 
 // ----------------------------------------------------------------------
-/// Local Variables:
-/// eval: (if (fboundp 'eu-rename-buffer) (eu-rename-buffer))
-/// End:
